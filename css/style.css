@@ -1,3 +1,15 @@
+/* 강제 라이트 모드 (다크 모드 무시) */
+html {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  /* 필요 시 다른 요소 색상도 여기서 덮어쓰기 */
+}
+
 /* Reset & 기본 스타일 */
 * {
   margin: 0;
