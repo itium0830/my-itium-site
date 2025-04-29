@@ -17,7 +17,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 /* Section-1: Hero 이미지 위 버튼 오버레이 */
 .section-1 .hero-wrapper { position: relative; text-align: center; }
 .section-1 .full-img { width: 100%; border-radius: 0; }
-.section1-btn { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); font-size: clamp(16px,1.5vw,24px); padding: clamp(8px,1vw,16px) clamp(16px,2vw,32px); border-radius: clamp(4px,0.5vw,12px); }
+.section1-btn { position: absolute; bottom: 20%; left: 35%; transform: translateX(-50%); font-size: clamp(16px,1.5vw,24px); padding: clamp(8px,1vw,16px) clamp(16px,2vw,32px); border-radius: clamp(4px,0.5vw,12px); }
 
 /* Sections 2~6: Full-image sections */
 .full-image-sections { padding: 4em 0; text-align: center; }
