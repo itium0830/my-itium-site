@@ -26,7 +26,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 /* CTA Footer (7번 섹션) */
 .cta-footer { background: #05796B; color: #fff; text-align: center; padding: 4em 0; }
 .cta-footer h2 { font-size: 2em; line-height: 1.3; margin-bottom: 1.5em; }
-.cta-footer h2 span { color: #FFCC66; }
+.cta-footer h2 span { color: #FFD99B; }
 
 /* FAQ 섹션 */
 .faq-section { padding: 4em 0; background: #f9f9f9; }
