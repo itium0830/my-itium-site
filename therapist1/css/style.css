@@ -10,7 +10,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 .container { width: 90%; max-width: 1080px; margin: 0 auto; }
 
 /* 버튼 공통 */
-.btn-primary { display: inline-block; background: #fff; color: #00704A; text-decoration: none; font-weight: 600; transition: opacity 0.2s; }
+.btn-primary { display: inline-block; background: #fff; color: #05796B; text-decoration: none; font-weight: 600; transition: opacity 0.2s; }
 .btn-primary:hover { opacity: 0.8; }
 .btn-cta { padding: 1em 2.5em; border-radius: 999px; }
 
@@ -24,13 +24,13 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 .full-image-sections .full-img { width: 100%; margin: 2em auto; border-radius: 0; }
 
 /* CTA Footer (7번 섹션) */
-.cta-footer { background: #00704A; color: #fff; text-align: center; padding: 4em 0; }
+.cta-footer { background: #05796B; color: #fff; text-align: center; padding: 4em 0; }
 .cta-footer h2 { font-size: 2em; line-height: 1.3; margin-bottom: 1.5em; }
 .cta-footer h2 span { color: #FFCC66; }
 
 /* FAQ 섹션 */
 .faq-section { padding: 4em 0; background: #f9f9f9; }
-.faq-section h2 { font-size: 1.8em; color: #004e3c; margin-bottom: 1em; }
+.faq-section h2 { font-size: 1.8em; color: #05796B; margin-bottom: 1em; }
 .faq-section details { background: #fff; border-radius: 8px; margin-bottom: 1em; padding: 1em 1.5em; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .faq-section summary { font-size: 1.1em; font-weight: 600; cursor: pointer; position: relative; padding-right: 1.5em; }
 .faq-section summary::after { content: '+'; position: absolute; right: 0; top: 0.2em; font-size: 1.2em; transition: transform 0.2s; }
@@ -39,7 +39,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 
 /* 문의 채널 섹션 */
 .contact-section { padding: 3em 0; background: #fff; }
-.contact-section h2 { font-size: 1.8em; color: #004e3c; text-align: center; margin-bottom: 2em; }
+.contact-section h2 { font-size: 1.8em; color: #05796B; text-align: center; margin-bottom: 2em; }
 .contact-icons { display: flex; justify-content: center; gap: 3em; margin-top: 1em; }
 .contact-icons a img { width: 40px; height: 40px; }
 
@@ -81,7 +81,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 .survey-section h1 {
   font-size: 1.8em;
   margin-bottom: 1em;
-  color: #004e3c;
+  color: #05796B;
 }
 
 /* ────────────────────────────────
@@ -133,7 +133,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
 .premium-cta .btn-cta {
   margin-top: 2em;
   background: #fff !important;
-  color: #00704A !important;
+  color: #05796B !important;
   padding: 0.75em 2em;
   border-radius: 999px;
   font-weight: 600;
