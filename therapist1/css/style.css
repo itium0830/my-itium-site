@@ -139,3 +139,42 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.5; color: #333; b
   font-weight: 600;
 }
 
+/* btn-therapist 에도 .btn-primary 스타일 적용 */
+.btn-therapist {
+  background: #fff;
+  color: #00704A;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+.btn-therapist:hover {
+  opacity: 0.8;
+}
+
+/* hero-btn 에도 .section1-btn 위치·사이징 룰 적용 */
+.hero-btn {
+  position: absolute;
+  /* 복사해 온 .section1-btn 내용 그대로 */
+  bottom: 20%;
+  left: 35%;
+  transform: translateX(-50%);
+  font-size: clamp(16px, 1.5vw, 24px);
+  padding: clamp(8px, 1vw, 16px) clamp(16px, 2vw, 32px);
+  border-radius: clamp(4px, 0.5vw, 12px);
+}
+
+
+/* btn-primary 의 스타일 복사 */
+.btn-therapist-cta {
+  display: inline-block;
+  background: #fff;
+  color: #00704A;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+  padding: 1em 2.5em;       /* btn-cta 에서 주던 패딩 */
+  border-radius: 999px;     /* btn-cta 에서 주던 곡률 */
+}
+.btn-therapist-cta:hover {
+  opacity: 0.8;
+}
