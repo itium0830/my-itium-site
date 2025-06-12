@@ -45,6 +45,164 @@
   <!-- 라이트 모드 강제 -->
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
+
+  <style>
+    /* 햄버거 메뉴 스타일 추가 */
+    .global-nav {
+      background: white;
+      padding: 15px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* 햄버거 버튼 */
+    .hamburger-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hamburger-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .hamburger-btn span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background: black;
+      margin: 3px 0;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .hamburger-btn.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger-btn.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
+
+    /* 메뉴 오버레이 */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: #05796B;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transform: translateY(-100%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 999;
+    }
+
+    .menu-overlay.active {
+      transform: translateY(0);
+    }
+
+    .menu-items {
+      list-style: none;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu-items li {
+      margin: 30px 0;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.6s ease;
+    }
+
+    .menu-overlay.active .menu-items li {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .menu-overlay.active .menu-items li:nth-child(1) {
+      transition-delay: 0.1s;
+    }
+
+    .menu-overlay.active .menu-items li:nth-child(2) {
+      transition-delay: 0.2s;
+    }
+
+    .menu-items a {
+      color: white;
+      text-decoration: none;
+      font-size: 2rem;
+      font-weight: 600;
+      padding: 15px 30px;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-items a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transition: left 0.3s ease;
+    }
+
+    .menu-items a:hover::before {
+      left: 0;
+    }
+
+    .menu-items a:hover {
+      transform: translateY(-3px);
+      text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 메인 콘텐츠에 상단 여백 추가 */
+    .section-1 {
+      margin-top: 80px;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .menu-items a {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -53,6 +211,25 @@
             height="0" width="0" style="display:none;visibility:hidden"></iframe>
   </noscript>
   <!-- End Google Tag Manager (noscript) -->
+
+  <!-- 햄버거 네비게이션 추가 -->
+  <nav class="global-nav">
+    <div class="nav-container">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 메뉴 오버레이 추가 -->
+  <div class="menu-overlay" id="menuOverlay">
+    <ul class="menu-items">
+      <li><a href="../index.html">🏠 보호자 전용</a></li>
+      <li><a href="index.html">👩‍⚕️ 치료사 전용</a></li>
+    </ul>
+  </div>
 
   <!-- 1번 섹션: Hero 이미지 위에 버튼 오버레이 -->
   <section class="section-1">
@@ -171,5 +348,44 @@
       </div>
     </div>
   </footer>
+
+  <!-- 햄버거 메뉴 JavaScript 추가 -->
+  <script>
+    // 햄버거 메뉴 토글 기능
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const body = document.body;
+
+    hamburgerBtn.addEventListener('click', function() {
+      hamburgerBtn.classList.toggle('active');
+      menuOverlay.classList.toggle('active');
+      
+      // 메뉴가 열릴 때 스크롤 방지
+      if (menuOverlay.classList.contains('active')) {
+        body.style.overflow = 'hidden';
+      } else {
+        body.style.overflow = 'auto';
+      }
+    });
+
+    // 메뉴 링크 클릭 시 메뉴 닫기
+    const menuLinks = document.querySelectorAll('.menu-items a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        hamburgerBtn.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        body.style.overflow = 'auto';
+      });
+    });
+
+    // ESC 키로 메뉴 닫기
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+        hamburgerBtn.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        body.style.overflow = 'auto';
+      }
+    });
+  </script>
 </body>
 </html>
