@@ -45,6 +45,239 @@
   <!-- 라이트 모드 강제 -->
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
+
+  <!-- 후기 섹션 스타일 -->
+  <style>
+    /* Testimonials Section Styles */
+    .testimonials-section {
+      padding: 5rem 0;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .testimonials-section .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .testimonials-section .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: #2c3e50;
+      font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .testimonials-subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 3rem;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .testimonials-slider {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .testimonial-track {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .testimonial-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin: 0 auto;
+      max-width: 700px;
+      display: none;
+      animation: slideIn 0.5s ease-in-out;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .testimonial-card.active {
+      display: block;
+    }
+
+    .testimonial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .stars {
+      font-size: 1.2rem;
+      color: #ffc107;
+    }
+
+    .testimonial-category {
+      background: #667eea;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .testimonial-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .testimonial-text strong {
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .author-icon {
+      font-size: 2rem;
+      background: #f8f9fa;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .author-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .author-detail {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .slider-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .slider-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-btn:hover {
+      background: #5a67d8;
+      transform: scale(1.1);
+    }
+
+    .slider-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ddd;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active,
+    .dot:hover {
+      background: #667eea;
+      transform: scale(1.2);
+    }
+
+    .testimonials-cta {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .cta-question {
+      font-size: 1.3rem;
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .cta-encouragement {
+      font-size: 1.1rem;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Responsive Design for Testimonials */
+    @media (max-width: 768px) {
+      .testimonials-section .section-title {
+        font-size: 2rem;
+      }
+
+      .testimonial-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+      }
+
+      .testimonial-text {
+        font-size: 1rem;
+      }
+
+      .slider-controls {
+        gap: 1rem;
+      }
+
+      .testimonials-cta {
+        margin: 2rem 1rem 0;
+        padding: 1.5rem;
+      }
+
+      .cta-question {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -71,7 +304,7 @@
     </div>
   </section>
 
-  <!-- Sections 2 to 6: full-image sections with <picture> for mobile -->
+  <!-- Sections 2 to 5: full-image sections with <picture> for mobile -->
   <section class="full-image-sections">
     <div class="container">
       <picture>
@@ -86,14 +319,110 @@
         <source media="(max-width: 768px)" srcset="images/section-4-mobile.png">
         <img src="images/section-4.png" alt="치료사 매칭 카드 섹션" class="full-img">
       </picture>
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-5-mobile.png">
-        <img src="images/section-5.png" alt="4단계 프로세스 섹션" class="full-img">
-      </picture>
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-6-mobile.png">
-        <img src="images/section-6.png" alt="후기 카드 섹션" class="full-img">
-      </picture>
+    </div>
+  </section>
+
+  <!-- 후기 섹션 (기존 section-6 이미지 대신 인터랙티브 슬라이더) -->
+  <section class="testimonials-section">
+    <div class="container">
+      <h2 class="section-title">아이티움과 함께한 변화 이야기</h2>
+      <p class="testimonials-subtitle">실제 부모님들의 생생한 후기를 확인해보세요</p>
+      
+      <div class="testimonials-slider">
+        <div class="testimonial-track">
+          <div class="testimonial-card active">
+            <div class="testimonial-header">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <div class="testimonial-category">언어발달</div>
+            </div>
+            <div class="testimonial-content">
+              <p class="testimonial-text">
+                "30개월까지 말을 거의 안 해서 정말 걱정이 많았어요. 아이티움에서 만난 언어치료사 선생님께서 우리 아이 성향에 맞는 놀이법을 알려주시고, <strong>3개월 만에 폭발적으로 말이 늘었어요.</strong> 이제는 재잘재잘 이야기하는 모습을 보며 매일 감동받고 있어요."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-icon">👩</div>
+                <div class="author-info">
+                  <div class="author-name">김○○님</div>
+                  <div class="author-detail">2세 아이 엄마</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <div class="testimonial-category">사회성 발달</div>
+            </div>
+            <div class="testimonial-content">
+              <p class="testimonial-text">
+                "친구들과 어울리지 못하고 혼자만 노는 아이가 걱정돼서 상담받았는데, 선생님이 단계별로 사회성 기술을 알려주셨어요. <strong>6개월 후 아이가 먼저 친구에게 다가가는 모습</strong>을 보고 눈물이 났어요."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-icon">👨</div>
+                <div class="author-info">
+                  <div class="author-name">박○○님</div>
+                  <div class="author-detail">5세 아이 아빠</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <div class="testimonial-category">발음교정</div>
+            </div>
+            <div class="testimonial-content">
+              <p class="testimonial-text">
+                "'ㄱ, ㄷ' 발음을 못해서 친구들이 알아듣지 못했는데, <strong>온라인 상담으로도 충분히 효과</strong>를 볼 수 있었어요. 전문가의 정확한 피드백 덕분에 3개월 만에 또렷하게 말할 수 있게 됐습니다."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-icon">👩</div>
+                <div class="author-info">
+                  <div class="author-name">이○○님</div>
+                  <div class="author-detail">4세 아이 엄마</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <div class="testimonial-category">주의집중</div>
+            </div>
+            <div class="testimonial-content">
+              <p class="testimonial-text">
+                "5분도 집중하지 못하던 아이가 걱정이었는데, 선생님이 알려주신 활동들로 차근차근 연습했어요. <strong>이제는 30분 넘게 책을 읽고 퍼즐도 완성</strong>해요. 아이의 성취감 넘치는 표정이 최고예요!"
+              </p>
+              <div class="testimonial-author">
+                <div class="author-icon">👩</div>
+                <div class="author-info">
+                  <div class="author-name">최○○님</div>
+                  <div class="author-detail">6세 아이 엄마</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slider-controls">
+          <button class="slider-btn prev" onclick="changeSlide(-1)">‹</button>
+          <div class="slider-dots">
+            <span class="dot active" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+          </div>
+          <button class="slider-btn next" onclick="changeSlide(1)">›</button>
+        </div>
+      </div>
+
+      <div class="testimonials-cta">
+        <p class="cta-question">우리 아이도 이런 변화가 가능할까요?</p>
+        <p class="cta-encouragement">지금 바로 전문가와 상담해보세요!</p>
+      </div>
     </div>
   </section>
 
@@ -174,5 +503,53 @@
       </div>
     </div>
   </footer>
+
+  <!-- 후기 슬라이더 JavaScript -->
+  <script>
+    // Testimonial Slider Functionality
+    let currentTestimonialIndex = 0;
+    const testimonials = document.querySelectorAll('.testimonial-card');
+    const dots = document.querySelectorAll('.dot');
+
+    function showTestimonial(index) {
+      // Hide all testimonials
+      testimonials.forEach(testimonial => {
+        testimonial.classList.remove('active');
+      });
+      
+      // Remove active class from all dots
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+      });
+      
+      // Show current testimonial and activate corresponding dot
+      if (testimonials[index]) {
+        testimonials[index].classList.add('active');
+        dots[index].classList.add('active');
+      }
+    }
+
+    function changeSlide(direction) {
+      currentTestimonialIndex += direction;
+      
+      if (currentTestimonialIndex >= testimonials.length) {
+        currentTestimonialIndex = 0;
+      } else if (currentTestimonialIndex < 0) {
+        currentTestimonialIndex = testimonials.length - 1;
+      }
+      
+      showTestimonial(currentTestimonialIndex);
+    }
+
+    function currentSlide(index) {
+      currentTestimonialIndex = index - 1;
+      showTestimonial(currentTestimonialIndex);
+    }
+
+    // Auto-advance slider every 6 seconds
+    setInterval(() => {
+      changeSlide(1);
+    }, 6000);
+  </script>
 </body>
 </html>
