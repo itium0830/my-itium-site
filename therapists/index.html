@@ -1202,7 +1202,9 @@
 
     // 치료사 상세 페이지로 이동
     function openTherapistDetail(therapistId) {
-      window.location.href = `therapist-detail.html?id=${therapistId}`;
+      // 현재 페이지에서 ID만 변경하여 리로드
+      const currentUrl = window.location.href.split('?')[0]; // URL에서 파라미터 제거
+      window.location.href = `${currentUrl}?id=${therapistId}`;
     }
 
     // 상담 신청
