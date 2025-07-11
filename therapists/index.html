@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>치료사 상세 정보 - 아이티움</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK 8버전 (호환성) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <style>
+    /* 강제 라이트 모드 */
+    html { color-scheme: light; }
+    @media (prefers-color-scheme: dark) {
+      body { background-color: #ffffff !important; color: #000000 !important; }
+    }
+
+    /* Reset & 기본 스타일 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; }
+    .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+    /* 헤더 */
+    .header {
+      background: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-btn {
+      background: #05796B;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #046A5C;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #05796B;
+    }
+
+    .contact-btn {
+      background: #05796B;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    .contact-btn:hover {
+      background: #046A5C;
+    }
+
+    /* 메인 컨테이너 */
+    .main-content {
+      padding: 40px 0;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    /* 치료사 프로필 사이드바 */
+    .therapist-sidebar {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 120px;
+      text-align: center;
+    }
+
+    .profile-image {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #05796B, #077A66);
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: white;
+    }
+
+    .therapist-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .therapist-intro {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .therapist-specialty-main {
+      color: #05796B;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 0.5rem;
+      background: #E8F5F4;
+      border-radius: 8px;
+    }
+
+    .consultation-btn {
+      width: 100%;
+      background: #05796B;
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    .consultation-btn:hover {
+      background: #046A5C;
+    }
+
+    .center-info {
+      font-size: 0.9rem;
+      color: #666;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .voucher-support {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #E8F5F4;
+      color: #05796B;
+      border-radius: 6px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* 상세 정보 메인 영역 */
+    .detail-sections {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 2rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #05796B;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-icon {
+      font-size: 1.5rem;
+    }
+
+    /* 전문분야 */
+    .specialties-container {
+      margin-bottom: 2rem;
+    }
+
+    .main-specialty {
+      background: #05796B;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .sub-specialties-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.8rem;
+      font-weight: 500;
+    }
+
+    .specialties-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .specialty-item {
+      background: #E8F5F4;
+      color: #05796B;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    /* 핵심 강점 */
+    .strengths-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .strength-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #05796B;
+    }
+
+    .strength-icon {
+      font-size: 1.5rem;
+      color: #05796B;
+      margin-top: 0.2rem;
+    }
+
+    .strength-content h4 {
+      color: #05796B;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    /* 치료 방식 */
+    .treatment-methods {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .method-item {
+      background: #f8f9fa;
+      padding: 1.2rem;
+      border-radius: 10px;
+      border-left: 4px solid #05796B;
+    }
+
+    .method-name {
+      font-weight: 600;
+      color: #05796B;
+      margin-bottom: 0.5rem;
+    }
+
+    /* 자격증 */
+    .certifications-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .certification-item {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      border: 2px solid #E8F5F4;
+    }
+
+    .cert-name {
+      font-weight: 600;
+      color: #05796B;
+      margin-bottom: 0.3rem;
+    }
+
+    .cert-detail {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* 경력 */
+    .experience-timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .experience-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0.5rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #05796B;
+    }
+
+    .experience-item {
+      position: relative;
+      margin-bottom: 1.5rem;
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-left: 1rem;
+    }
+
+    .experience-item::before {
+      content: '';
+      position: absolute;
+      left: -1.75rem;
+      top: 1rem;
+      width: 12px;
+      height: 12px;
+      background: #05796B;
+      border-radius: 50%;
+    }
+
+    .experience-period {
+      font-weight: 600;
+      color: #05796B;
+      font-size: 0.9rem;
+    }
+
+    .experience-role {
+      font-weight: 600;
+      margin: 0.3rem 0;
+    }
+
+    .experience-description {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* 학력 정보 */
+    .education-info {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border-left: 4px solid #05796B;
+    }
+
+    .education-degree {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #05796B;
+      margin-bottom: 0.5rem;
+    }
+
+    .education-school {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .education-major {
+      color: #666;
+    }
+
+    /* 교육 이수 */
+    .training-list {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .training-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .training-item::before {
+      content: "✓";
+      color: #05796B;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    /* 후기 섹션 */
+    .reviews-container {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .review-item {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border-left: 4px solid #05796B;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .review-author {
+      font-weight: 600;
+      color: #05796B;
+    }
+
+    .review-rating {
+      color: #FFD700;
+      font-size: 1.1rem;
+    }
+
+    .review-content {
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .review-date {
+      text-align: right;
+      color: #999;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    /* 더 많은 치료사 섹션 */
+    .more-therapists {
+      padding: 60px 0;
+      background: #f8f9fa;
+    }
+
+    .more-title {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 3rem;
+      color: #05796B;
+      font-weight: 700;
+    }
+
+    .therapists-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .therapist-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .therapist-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, #05796B, #077A66);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    .card-info {
+      padding: 1.5rem;
+    }
+
+    .card-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .card-specialty {
+      color: #05796B;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .card-experience {
+      color: #666;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: #E8F5F4;
+      color: #05796B;
+      padding: 0.2rem 0.6rem;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    .footer {
+      background: #222;
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .therapist-sidebar {
+        position: static;
+        margin-bottom: 2rem;
+      }
+
+      .profile-image {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+      }
+
+      .section {
+        padding: 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+      }
+
+      .specialties-grid,
+      .certifications-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .therapists-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+      }
+
+      .back-btn, .contact-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+
+      .experience-timeline {
+        padding-left: 1.5rem;
+      }
+
+      .experience-item {
+        margin-left: 0.5rem;
+      }
+
+      .experience-item::before {
+        left: -1.25rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="javascript:history.back()" class="back-btn">← 뒤로가기</a>
+        <div class="logo">아이티움</div>
+        <a href="https://itium0830.github.io/my-itium-site/survey" class="contact-btn">상담 신청</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <div class="container">
+    <div class="main-content">
+      <!-- 치료사 사이드바 -->
+      <div class="therapist-sidebar">
+        <div class="profile-image" id="profileImage">👩‍⚕️</div>
+        <div class="therapist-name" id="therapistName">김미영 치료사</div>
+        <div class="therapist-intro" id="therapistIntro">
+          아이들의 언어 발달을 도와 밝은 미래를 만들어갑니다
+        </div>
+        <div class="therapist-specialty-main" id="therapistSpecialty">언어치료 전문</div>
+        
+        <button class="consultation-btn" onclick="requestConsultation()">
+          상담 신청하기
+        </button>
+
+        <div class="center-info" id="centerInfo">
+          <strong>근무 센터</strong><br>
+          서울 강남 아동발달센터<br>
+          <small>📍 서울시 강남구 테헤란로 123</small>
+          <div class="voucher-support" id="voucherSupport">
+            바우처 지원 가능
+          </div>
+        </div>
+      </div>
+
+      <!-- 상세 정보 -->
+      <div class="detail-sections">
+        <!-- 전문분야 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">🎯</span>
+            전문분야
+          </h3>
+          <div class="specialties-container" id="specialtiesContainer">
+            <div class="main-specialty" id="mainSpecialty">언어치료</div>
+            <div class="sub-specialties-label">추가 전문분야</div>
+            <div class="specialties-grid" id="subSpecialties">
+              <div class="specialty-item">놀이치료</div>
+              <div class="specialty-item">부모교육</div>
+              <div class="specialty-item">감각통합</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 핵심 강점 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">💪</span>
+            핵심 강점
+          </h3>
+          <div class="strengths-list" id="strengths">
+            <div class="strength-item">
+              <div class="strength-icon">🎨</div>
+              <div class="strength-content">
+                <h4>창의적 치료 프로그램</h4>
+                <p>아이의 흥미를 끄는 다양한 활동과 놀이를 통한 자연스러운 언어 발달 유도</p>
+              </div>
+            </div>
+            <div class="strength-item">
+              <div class="strength-icon">👨‍👩‍👧‍👦</div>
+              <div class="strength-content">
+                <h4>가족 중심 접근</h4>
+                <p>아이뿐만 아니라 가족 전체의 소통 환경 개선을 위한 통합적 프로그램 제공</p>
+              </div>
+            </div>
+            <div class="strength-item">
+              <div class="strength-icon">📊</div>
+              <div class="strength-content">
+                <h4>체계적 진단과 평가</h4>
+                <p>정확한 언어 발달 수준 파악을 위한 다각적 평가와 개별 맞춤 치료 계획 수립</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 선호하는 치료 방식 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">🎭</span>
+            선호하는 치료 방식
+          </h3>
+          <div class="treatment-methods" id="treatmentMethods">
+            <div class="method-item">
+              <div class="method-name">💻 온라인 부모 상담 및 교육</div>
+              <div>화상통화를 통한 부모님 대상 상담과 가정에서 적용할 수 있는 교육 프로그램</div>
+            </div>
+            <div class="method-item">
+              <div class="method-name">👶 온라인 아동 상담 및 치료</div>
+              <div>아이와 직접 화상으로 진행하는 개별 맞춤 치료 프로그램</div>
+            </div>
+            <div class="method-item">
+              <div class="method-name">🏠 가정 방문 상담 및 치료(홈티)</div>
+              <div>치료사가 직접 가정을 방문하여 아이의 익숙한 환경에서 진행하는 치료</div>
+            </div>
+            <div class="method-item">
+              <div class="method-name">🏥 센터 방문 상담 및 치료</div>
+              <div>전문 센터에서 체계적인 시설과 도구를 활용한 대면 치료</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 보유 자격증 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">🏆</span>
+            보유 자격증
+          </h3>
+          <div class="certifications-grid" id="certifications">
+            <div class="certification-item">
+              <div class="cert-name">언어재활사 1급</div>
+              <div class="cert-detail">2013년 취득</div>
+            </div>
+            <div class="certification-item">
+              <div class="cert-name">아동발달전문가</div>
+              <div class="cert-detail">2015년 취득</div>
+            </div>
+            <div class="certification-item">
+              <div class="cert-name">AAC 전문가</div>
+              <div class="cert-detail">보완대체의사소통</div>
+            </div>
+            <div class="certification-item">
+              <div class="cert-name">PROMPT 레벨2</div>
+              <div class="cert-detail">구강운동치료</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 치료사 경력 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">📈</span>
+            치료사 경력
+          </h3>
+          <div class="experience-timeline" id="experience">
+            <div class="experience-item">
+              <div class="experience-period">2020년 - 현재</div>
+              <div class="experience-role">서울 강남 아동발달센터 수석 언어치료사</div>
+              <div class="experience-description">언어지연 및 발음장애 아동 전담, 부모교육 프로그램 운영</div>
+            </div>
+            <div class="experience-item">
+              <div class="experience-period">2017년 - 2020년</div>
+              <div class="experience-role">밝은 언어치료실 원장</div>
+              <div class="experience-description">개별 언어치료, 그룹 언어 프로그램 개발 및 운영</div>
+            </div>
+            <div class="experience-item">
+              <div class="experience-period">2014년 - 2017년</div>
+              <div class="experience-role">서울대학교병원 언어치료사</div>
+              <div class="experience-description">의료진과 협력한 종합적 언어발달 치료 및 재활</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 학력 정보 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">🎓</span>
+            학력 정보
+          </h3>
+          <div class="education-info" id="education">
+            <div class="education-degree">석사 (언어병리학 전공)</div>
+            <div class="education-school">이화여자대학교 일반대학원</div>
+            <div class="education-major">언어병리학과</div>
+            <br>
+            <div class="education-degree">학사 (언어치료학 전공)</div>
+            <div class="education-school">이화여자대학교</div>
+            <div class="education-major">언어병리학과</div>
+          </div>
+        </div>
+
+        <!-- 교육 이수 정보 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">📚</span>
+            교육 이수 정보
+          </h3>
+          <div class="training-list" id="training">
+            <div class="training-item">아동 언어발달 전문가 과정 (120시간)</div>
+            <div class="training-item">PROMPT 치료법 워크샵 레벨1, 레벨2</div>
+            <div class="training-item">AAC(보완대체의사소통) 전문가 과정</div>
+            <div class="training-item">자폐스펙트럼 아동 언어치료 심화과정</div>
+            <div class="training-item">말더듬 치료 전문가 과정</div>
+            <div class="training-item">부모교육 프로그램 지도자 과정</div>
+          </div>
+        </div>
+
+        <!-- 후기 -->
+        <div class="section">
+          <h3 class="section-title">
+            <span class="section-icon">💬</span>
+            후기 (127개)
+          </h3>
+          <div class="reviews-container" id="reviews">
+            <div class="review-item">
+              <div class="review-header">
+                <div class="review-author">박**님</div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-content">
+                6세 아들이 발음이 부정확해서 걱정이 많았는데, 김미영 선생님 덕분에 많이 좋아졌어요. 
+                아이가 재미있어하는 놀이로 치료해주셔서 매번 치료실 가는 걸 기대하고 있어요. 
+                부모에게도 집에서 할 수 있는 방법들을 자세히 알려주셔서 정말 감사합니다.
+              </div>
+              <div class="review-date">2024.12.15</div>
+            </div>
+            <div class="review-item">
+              <div class="review-header">
+                <div class="review-author">이**님</div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-content">
+                말이 늦은 5세 딸을 데리고 갔는데, 정말 체계적으로 평가해주시고 아이 수준에 맞는 
+                프로그램을 짜주셨어요. 3개월 만에 어휘력이 눈에 띄게 늘었고, 문장도 길어졌어요. 
+                선생님의 따뜻한 마음이 느껴져서 더욱 신뢰가 갔습니다.
+              </div>
+              <div class="review-date">2024.11.28</div>
+            </div>
+            <div class="review-item">
+              <div class="review-header">
+                <div class="review-author">최**님</div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-content">
+                말더듬이 있는 7세 아들을 치료받았는데, 선생님이 정말 전문적이시고 아이를 잘 
+                이해해주세요. 아이의 자신감도 많이 회복되었고, 또래 친구들과의 소통도 자연스러워졌어요. 
+                온라인 상담도 대면 못지않게 효과적이었습니다.
+              </div>
+              <div class="review-date">2024.11.10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 더 많은 치료사들 -->
+  <section class="more-therapists">
+    <div class="container">
+      <h2 class="more-title">다른 전문 치료사들</h2>
+      <div class="therapists-grid" id="moreTherapists">
+        <!-- JavaScript로 동적 생성 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 아이티움. 아이의 발달에 딱 맞는 전문가 매칭 서비스</p>
+    </div>
+  </footer>
+
+  <script>
+    // Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAHKElkUtTD36_UkeNHm6fuldwcNXL0hM",
+      authDomain: "itium-therapists.firebaseapp.com",
+      projectId: "itium-therapists",
+      storageBucket: "itium-therapists.firebasestorage.app",
+      messagingSenderId: "524452920161",
+      appId: "1:524452920161:web:3a41c7cd9647bbe6e4a320",
+      measurementId: "G-2PP3ZBKY82"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Firebase에서 치료사 데이터 가져오기
+    async function loadTherapistFromFirebase(therapistId) {
+      try {
+        const docRef = db.collection('therapists').doc(therapistId);
+        const doc = await docRef.get();
+        
+        if (doc.exists) {
+          return doc.data();
+        } else {
+          console.log('치료사 정보를 찾을 수 없습니다.');
+          return null;
+        }
+      } catch (error) {
+        console.error('Firebase에서 데이터를 가져오는 중 오류 발생:', error);
+        return null;
+      }
+    }
+
+    // Firebase에서 모든 치료사 목록 가져오기
+    async function loadAllTherapistsFromFirebase() {
+      try {
+        const querySnapshot = await db.collection('therapists').get();
+        const therapists = [];
+        querySnapshot.forEach((doc) => {
+          therapists.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        return therapists;
+      } catch (error) {
+        console.error('전체 치료사 목록을 가져오는 중 오류 발생:', error);
+        return [];
+      }
+    }
+
+    // 로딩 상태 표시
+    function showLoading() {
+      document.getElementById('therapistName').textContent = '로딩 중...';
+      document.getElementById('therapistIntro').textContent = 'Firebase에서 데이터를 불러오는 중입니다...';
+    }
+
+    // 오류 상태 표시
+    function showError() {
+      document.getElementById('therapistName').textContent = '오류 발생';
+      document.getElementById('therapistIntro').textContent = '치료사 정보를 불러올 수 없습니다. 관리자에게 문의하세요.';
+    }
+
+    // 백업 데이터 (Firebase 실패 시 사용)
+    const fallbackData = {
+      'sample-therapist': {
+        name: '샘플 치료사',
+        intro: '치료사 정보를 준비 중입니다',
+        specialty: '전문 치료',
+        image: '👨‍⚕️',
+        centerInfo: {
+          isPublic: false,
+          displayText: '🔒 비공개 (상담 신청 시 안내)'
+        },
+        voucherSupport: '상담 시 안내',
+        mainSpecialty: '치료',
+        subSpecialties: ['전문치료'],
+        strengths: [
+          {
+            icon: '⭐',
+            title: '전문성',
+            description: '풍부한 경험을 바탕으로 한 전문적인 치료'
+          }
+        ],
+        treatmentMethods: [
+          {
+            name: '💻 온라인 상담',
+            description: '화상을 통한 전문 상담'
+          }
+        ],
+        certifications: [
+          { name: '전문 자격증', detail: '보유' }
+        ],
+        experience: [
+          {
+            period: '현재',
+            role: '전문 치료사',
+            description: '다양한 치료 경험'
+          }
+        ],
+        education: {
+          bachelor: {
+            degree: '학사',
+            school: '대학교',
+            major: '관련 전공'
+          }
+        },
+        training: ['전문 과정 수료'],
+        reviews: [
+          {
+            author: '보호자',
+            rating: 5,
+            content: '만족스러운 치료를 받았습니다.',
+            date: '2024.12.01'
+          }
+        ]
+      }
+    };
+
+    // URL에서 치료사 ID 가져오기
+    function getTherapistIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id') || 'sample-therapist';
+    }
+
+    // 치료사 정보 로드 (Firebase 우선, 실패 시 백업 데이터 사용)
+    async function loadTherapistInfo() {
+      const therapistId = getTherapistIdFromUrl();
+      
+      // 로딩 상태 표시
+      showLoading();
+      
+      // Firebase에서 데이터 가져오기 시도
+      let therapist = await loadTherapistFromFirebase(therapistId);
+      
+      // Firebase 실패 시 백업 데이터 사용
+      if (!therapist && fallbackData[therapistId]) {
+        console.log('Firebase에서 해당 치료사를 찾을 수 없음, 백업 데이터 사용');
+        therapist = fallbackData[therapistId];
+      }
+      
+      if (!therapist) {
+        showError();
+        return;
+      }
+
+      // 기본 정보 표시
+      displayTherapistInfo(therapist);
+    }
+
+    // 치료사 정보 화면에 표시
+    function displayTherapistInfo(therapist) {
+      // 기본 정보
+      document.getElementById('profileImage').textContent = therapist.image || '👨‍⚕️';
+      document.getElementById('therapistName').textContent = therapist.name || '치료사';
+      document.getElementById('therapistIntro').textContent = therapist.intro || '';
+      document.getElementById('therapistSpecialty').textContent = therapist.specialty || '';
+      
+      // 센터 정보 (공개/비공개 처리)
+      const centerInfo = therapist.centerInfo;
+      if (centerInfo && centerInfo.isPublic) {
+        document.getElementById('centerInfo').innerHTML = `
+          <strong>근무 센터</strong><br>
+          ${centerInfo.name}<br>
+          <small>📍 ${centerInfo.address}</small>
+          <div class="voucher-support">${therapist.voucherSupport}</div>
+        `;
+      } else if (centerInfo) {
+        document.getElementById('centerInfo').innerHTML = `
+          <strong>근무 센터</strong><br>
+          ${centerInfo.displayText || '🔒 비공개 (상담 신청 시 안내)'}
+        `;
+      }
+
+      // 전문분야 (주전문분야 + 부전문분야)
+      if (therapist.mainSpecialty) {
+        document.getElementById('mainSpecialty').textContent = therapist.mainSpecialty;
+      }
+      if (therapist.subSpecialties && therapist.subSpecialties.length > 0) {
+        document.getElementById('subSpecialties').innerHTML = 
+          therapist.subSpecialties.map(s => `<div class="specialty-item">${s}</div>`).join('');
+      } else {
+        document.getElementById('subSpecialties').innerHTML = 
+          '<div class="specialty-item">추가 정보 준비 중</div>';
+      }
+
+      // 핵심 강점
+      if (therapist.strengths && therapist.strengths.length > 0) {
+        document.getElementById('strengths').innerHTML = 
+          therapist.strengths.map(s => `
+            <div class="strength-item">
+              <div class="strength-icon">${s.icon}</div>
+              <div class="strength-content">
+                <h4>${s.title}</h4>
+                <p>${s.description}</p>
+              </div>
+            </div>
+          `).join('');
+      }
+
+      // 치료 방식
+      if (therapist.treatmentMethods && therapist.treatmentMethods.length > 0) {
+        document.getElementById('treatmentMethods').innerHTML = 
+          therapist.treatmentMethods.map(m => `
+            <div class="method-item">
+              <div class="method-name">${m.name}</div>
+              <div>${m.description}</div>
+            </div>
+          `).join('');
+      }
+
+      // 자격증
+      if (therapist.certifications && therapist.certifications.length > 0) {
+        document.getElementById('certifications').innerHTML = 
+          therapist.certifications.map(c => `
+            <div class="certification-item">
+              <div class="cert-name">${c.name}</div>
+              <div class="cert-detail">${c.detail}</div>
+            </div>
+          `).join('');
+      }
+
+      // 경력
+      if (therapist.experience && therapist.experience.length > 0) {
+        document.getElementById('experience').innerHTML = 
+          therapist.experience.map(e => `
+            <div class="experience-item">
+              <div class="experience-period">${e.period}</div>
+              <div class="experience-role">${e.role}</div>
+              <div class="experience-description">${e.description}</div>
+            </div>
+          `).join('');
+      }
+
+      // 학력
+      if (therapist.education) {
+        const edu = therapist.education;
+        document.getElementById('education').innerHTML = `
+          ${edu.master ? `
+            <div class="education-degree">${edu.master.degree}</div>
+            <div class="education-school">${edu.master.school}</div>
+            <div class="education-major">${edu.master.major}</div>
+            <br>
+          ` : ''}
+          ${edu.bachelor ? `
+            <div class="education-degree">${edu.bachelor.degree}</div>
+            <div class="education-school">${edu.bachelor.school || '대학교'}</div>
+            <div class="education-major">${edu.bachelor.major}</div>
+          ` : ''}
+        `;
+      }
+
+      // 교육 이수
+      if (therapist.training && therapist.training.length > 0) {
+        document.getElementById('training').innerHTML = 
+          therapist.training.map(t => `<div class="training-item">${t}</div>`).join('');
+      }
+
+      // 후기
+      if (therapist.reviews && therapist.reviews.length > 0) {
+        document.getElementById('reviews').innerHTML = 
+          therapist.reviews.map(r => `
+            <div class="review-item">
+              <div class="review-header">
+                <div class="review-author">${r.author}</div>
+                <div class="review-rating">${'★'.repeat(r.rating || 5)}</div>
+              </div>
+              <div class="review-content">${r.content}</div>
+              <div class="review-date">${r.date}</div>
+            </div>
+          `).join('');
+      }
+
+      // 페이지 제목
+      document.title = `${therapist.name} - 아이티움`;
+    }
+
+    // 더 많은 치료사들 로드 (Firebase에서) - 디버깅 추가
+    async function loadMoreTherapists() {
+      const currentTherapistId = getTherapistIdFromUrl();
+      console.log('현재 치료사 ID:', currentTherapistId);
+      
+      // Firebase에서 전체 치료사 목록 가져오기
+      console.log('Firebase에서 치료사 목록 가져오는 중...');
+      const allTherapists = await loadAllTherapistsFromFirebase();
+      console.log('Firebase에서 가져온 치료사 수:', allTherapists.length);
+      console.log('전체 치료사 목록:', allTherapists);
+      
+      // 현재 치료사 제외한 다른 치료사들 (최대 6명)
+      const otherTherapists = allTherapists
+        .filter(t => t.id !== currentTherapistId)
+        .slice(0, 6);
+      
+      console.log('현재 치료사 제외 후 다른 치료사 수:', otherTherapists.length);
+      console.log('표시할 치료사들:', otherTherapists);
+      
+      const moreTherapistsContainer = document.getElementById('moreTherapists');
+      
+      if (otherTherapists.length > 0) {
+        console.log('치료사 카드 생성 중...');
+        moreTherapistsContainer.innerHTML = otherTherapists.map(therapist => `
+          <div class="therapist-card" onclick="openTherapistDetail('${therapist.id}')">
+            <div class="card-image">${therapist.image || '👨‍⚕️'}</div>
+            <div class="card-info">
+              <div class="card-name">${therapist.name}</div>
+              <div class="card-specialty">${therapist.specialty}</div>
+              <div class="card-experience">${therapist.mainSpecialty || ''}</div>
+              <div class="card-badges">
+                ${(therapist.subSpecialties || []).slice(0, 3).map(badge => `<span class="badge">${badge}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('');
+        console.log('치료사 카드 생성 완료!');
+      } else {
+        console.log('표시할 다른 치료사가 없음');
+        moreTherapistsContainer.innerHTML = `
+          <p>다른 치료사 정보를 불러오는 중입니다...</p>
+          <div style="background: #f0f0f0; padding: 1rem; margin-top: 1rem; border-radius: 8px;">
+            <strong>디버깅 정보:</strong><br>
+            현재 치료사 ID: ${currentTherapistId}<br>
+            Firebase에서 가져온 치료사 수: ${allTherapists.length}<br>
+            ${allTherapists.length === 0 ? 
+              '<span style="color: red;">⚠️ Firebase에서 치료사 데이터를 가져오지 못했습니다!</span>' : 
+              '✅ Firebase 연결 정상'}
+          </div>
+        `;
+      }
+    }
+
+    // 치료사 상세 페이지로 이동
+    function openTherapistDetail(therapistId) {
+      window.location.href = `therapist-detail.html?id=${therapistId}`;
+    }
+
+    // 상담 신청
+    function requestConsultation() {
+      window.open('https://itium0830.github.io/my-itium-site/survey', '_blank');
+    }
+
+    // 페이지 로드 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTherapistInfo();
+      loadMoreTherapists();
+    });
+  </script>
+</body>
+</html>

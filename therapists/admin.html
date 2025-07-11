@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이티움 치료사 관리자 페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #05796B;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 2px solid #05796B;
+            color: #05796B;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: #05796B;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 폼 스타일 */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #05796B;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #05796B;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .checkbox-group:hover {
+            background-color: #f8f9fa;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+            color: #333;
+        }
+
+        .btn {
+            background: #05796B;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #046A5C;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* 치료사 목록 스타일 */
+        .therapist-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .therapist-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #05796B;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .therapist-info h3 {
+            color: #05796B;
+            margin-bottom: 0.5rem;
+        }
+
+        .therapist-info p {
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .therapist-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* 로그인 화면 스타일 */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #05796B, #077A66);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-box h1 {
+            color: #05796B;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .login-box p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #05796B;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #05796B;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: #046A5C;
+        }
+
+        .login-error {
+            color: #dc3545;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.authenticated {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .therapist-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .therapist-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .login-box {
+                padding: 2rem;
+            }
+
+            .header button {
+                position: static !important;
+                margin-top: 1rem;
+                width: auto;
+            }
+
+            /* 치료 방식 체크박스 모바일 대응 */
+            .form-group[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 로그인 화면 -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h1>🔒 관리자 로그인</h1>
+            <p>아이티움 치료사 관리 시스템에 오신 것을 환영합니다</p>
+            <form id="loginForm">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="login-input" 
+                    placeholder="비밀번호를 입력하세요"
+                    autocomplete="current-password"
+                    required
+                >
+                <button type="submit" class="login-btn">로그인</button>
+                <div id="loginError" class="login-error">
+                    잘못된 비밀번호입니다. 다시 시도해주세요.
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관리자 메인 화면 -->
+    <div id="adminContent" class="admin-content">
+        <div class="container">
+        <div class="header">
+            <h1>🔥 아이티움 치료사 관리자 페이지</h1>
+            <p>Firebase에서 치료사 정보를 쉽게 관리하세요</p>
+            <button onclick="logout()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                🚪 로그아웃
+            </button>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('add-therapist')">새 치료사 추가</button>
+            <button class="tab-btn" onclick="showTab('therapist-list')">치료사 목록</button>
+        </div>
+
+        <!-- 상태 메시지 -->
+        <div id="statusMessage" class="status-message"></div>
+
+        <!-- 새 치료사 추가 탭 -->
+        <div id="add-therapist" class="tab-content active">
+            <h2>새 치료사 추가</h2>
+            <form id="therapistForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">치료사 이름 *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">이모지</label>
+                        <select id="image" name="image">
+                            <option value="👩‍⚕️">👩‍⚕️ 여성 치료사</option>
+                            <option value="👨‍⚕️">👨‍⚕️ 남성 치료사</option>
+                            <option value="👩‍🎤">👩‍🎤 음악치료사</option>
+                            <option value="👨‍🎨">👨‍🎨 미술치료사</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="intro">한 줄 소개 *</label>
+                        <input type="text" id="intro" name="intro" placeholder="아이들의 언어 발달을 도와 밝은 미래를 만들어갑니다" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="specialty">전문분야 표시 *</label>
+                        <input type="text" id="specialty" name="specialty" placeholder="언어치료 전문" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mainSpecialty">주 전문분야 *</label>
+                        <select id="mainSpecialty" name="mainSpecialty" required>
+                            <option value="">선택하세요</option>
+                            <option value="언어치료">언어치료</option>
+                            <option value="심리상담">심리상담</option>
+                            <option value="작업치료">작업치료</option>
+                            <option value="물리치료">물리치료</option>
+                            <option value="놀이치료">놀이치료</option>
+                            <option value="미술치료">미술치료</option>
+                            <option value="음악치료">음악치료</option>
+                            <option value="행동치료(ABA)">행동치료(ABA)</option>
+                            <option value="감각통합">감각통합</option>
+                            <option value="부모교육">부모교육</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="subSpecialties">부 전문분야 (쉼표로 구분)</label>
+                        <input type="text" id="subSpecialties" name="subSpecialties" placeholder="놀이치료, 부모교육, 감각통합">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="centerName">근무 센터명</label>
+                        <input type="text" id="centerName" name="centerName" placeholder="서울 강남 아동발달센터">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="centerAddress">센터 주소</label>
+                        <input type="text" id="centerAddress" name="centerAddress" placeholder="서울시 강남구 테헤란로 123">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="centerPublic" name="centerPublic">
+                            <label for="centerPublic">센터 정보 공개</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="voucherSupport">바우처/실비 지원</label>
+                        <select id="voucherSupport" name="voucherSupport">
+                            <option value="바우처 지원 가능">바우처 지원 가능</option>
+                            <option value="실비 지원 가능">실비 지원 가능</option>
+                            <option value="바우처, 실비 모두 지원 가능">바우처, 실비 모두 지원 가능</option>
+                            <option value="해당 없음">해당 없음</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="strengths">핵심 강점 (줄바꿈으로 구분)</label>
+                        <textarea id="strengths" name="strengths" placeholder="🎨 창의적 치료 프로그램|아이의 흥미를 끄는 다양한 활동과 놀이를 통한 자연스러운 언어 발달 유도&#10;👨‍👩‍👧‍👦 가족 중심 접근|아이뿐만 아니라 가족 전체의 소통 환경 개선을 위한 통합적 프로그램 제공"></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>선호하는 치료 방식 (여러 개 선택 가능)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="method1" name="treatmentMethods" value="💻 온라인 부모 상담 및 교육">
+                                <label for="method1">💻 온라인 부모 상담 및 교육</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="method2" name="treatmentMethods" value="👶 온라인 아동 상담 및 치료">
+                                <label for="method2">👶 온라인 아동 상담 및 치료</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="method3" name="treatmentMethods" value="🏠 가정 방문 상담 및 치료(홈티)">
+                                <label for="method3">🏠 가정 방문 상담 및 치료(홈티)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="method4" name="treatmentMethods" value="🏥 센터 방문 상담 및 치료">
+                                <label for="method4">🏥 센터 방문 상담 및 치료</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="certifications">보유 자격증 (줄바꿈으로 구분)</label>
+                        <textarea id="certifications" name="certifications" placeholder="언어재활사 1급|2013년 취득&#10;아동발달전문가|2015년 취득"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experience">경력 사항 (줄바꿈으로 구분)</label>
+                        <textarea id="experience" name="experience" placeholder="2020년 - 현재|서울 강남 아동발달센터 수석 언어치료사|언어지연 및 발음장애 아동 전담"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="education">학력 정보</label>
+                        <textarea id="education" name="education" placeholder="석사|이화여자대학교 일반대학원|언어병리학과&#10;학사|이화여자대학교|언어병리학과"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="training">교육 이수 정보 (줄바꿈으로 구분)</label>
+                        <textarea id="training" name="training" placeholder="아동 언어발달 전문가 과정 (120시간)&#10;PROMPT 치료법 워크샵 레벨1, 레벨2"></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="reviews">후기 (줄바꿈으로 구분)</label>
+                        <textarea id="reviews" name="reviews" placeholder="박**님|5|6세 아들이 발음이 부정확해서 걸정이 많았는데...&#10;이**님|5|말이 늦은 5세 딸을 데리고 갔는데..."></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button type="submit" class="btn">💾 치료사 저장</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 폼 초기화</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 치료사 목록 탭 -->
+        <div id="therapist-list" class="tab-content">
+            <h2>등록된 치료사 목록</h2>
+            <div id="therapistListContainer" class="loading">
+                Firebase에서 데이터를 불러오는 중...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAHKElkUtTD36_UkeNHm6fuldwcNXL0hM",
+            authDomain: "itium-therapists.firebaseapp.com",
+            projectId: "itium-therapists",
+            storageBucket: "itium-therapists.firebasestorage.app",
+            messagingSenderId: "524452920161",
+            appId: "1:524452920161:web:3a41c7cd9647bbe6e4a320",
+            measurementId: "G-2PP3ZBKY82"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let editingTherapistId = null;
+        const ADMIN_PASSWORD = 'pair230830!';
+
+        // 로그인 처리
+        function handleLogin(password) {
+            if (password === ADMIN_PASSWORD) {
+                // 로그인 성공
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('adminContent').classList.add('authenticated');
+                
+                // 세션 저장 (브라우저 닫을 때까지 유지)
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                
+                return true;
+            } else {
+                // 로그인 실패
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+                return false;
+            }
+        }
+
+        // 세션 확인
+        function checkAuthentication() {
+            const isAuthenticated = sessionStorage.getItem('adminAuthenticated') === 'true';
+            
+            if (isAuthenticated) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('adminContent').classList.add('authenticated');
+            } else {
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.getElementById('adminContent').classList.remove('authenticated');
+            }
+            
+            return isAuthenticated;
+        }
+
+        // 로그아웃
+        function logout() {
+            sessionStorage.removeItem('adminAuthenticated');
+            location.reload();
+        }
+
+        // 탭 전환
+        function showTab(tabName) {
+            // 모든 탭 내용 숨기기
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 모든 탭 버튼 비활성화
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 선택된 탭 활성화
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // 치료사 목록 탭이면 데이터 로드
+            if (tabName === 'therapist-list') {
+                loadTherapists();
+            }
+        }
+
+        // 상태 메시지 표시
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // 폼 데이터를 Firebase 형식으로 변환
+        function parseFormData(formData) {
+            // 선호하는 치료 방식 처리 (체크박스)
+            const selectedMethods = [];
+            document.querySelectorAll('input[name="treatmentMethods"]:checked').forEach(checkbox => {
+                selectedMethods.push(checkbox.value);
+            });
+            
+            const data = {
+                name: formData.get('name'),
+                intro: formData.get('intro'),
+                specialty: formData.get('specialty'),
+                image: formData.get('image'),
+                mainSpecialty: formData.get('mainSpecialty'),
+                subSpecialties: formData.get('subSpecialties') ? 
+                    formData.get('subSpecialties').split(',').map(s => s.trim()).filter(s => s) : [],
+                centerInfo: {
+                    isPublic: formData.get('centerPublic') === 'on',
+                    name: formData.get('centerName') || '',
+                    address: formData.get('centerAddress') || '',
+                    displayText: formData.get('centerPublic') === 'on' ? 
+                        formData.get('centerName') : '🔒 비공개 (상담 신청 시 안내)'
+                },
+                voucherSupport: formData.get('voucherSupport'),
+                strengths: parseStrengths(formData.get('strengths')),
+                treatmentMethods: parseTreatmentMethodsFromCheckbox(selectedMethods),
+                certifications: parseCertifications(formData.get('certifications')),
+                experience: parseExperience(formData.get('experience')),
+                education: parseEducation(formData.get('education')),
+                training: parseTraining(formData.get('training')),
+                reviews: parseReviews(formData.get('reviews'))
+            };
+            
+            return data;
+        }
+
+        // 핵심 강점 파싱
+        function parseStrengths(strengthsText) {
+            if (!strengthsText) return [];
+            
+            return strengthsText.split('\n')
+                .filter(line => line.trim())
+                .map(line => {
+                    const parts = line.split('|');
+                    if (parts.length >= 2) {
+                        const iconTitle = parts[0].split(' ');
+                        const icon = iconTitle[0];
+                        const title = iconTitle.slice(1).join(' ');
+                        return {
+                            icon: icon,
+                            title: title,
+                            description: parts[1].trim()
+                        };
+                    } else {
+                        return {
+                            icon: '⭐',
+                            title: '핵심 강점',
+                            description: line.trim()
+                        };
+                    }
+                });
+        }
+
+        // 치료 방식 파싱 (체크박스 방식)
+        function parseTreatmentMethodsFromCheckbox(selectedMethods) {
+            const descriptions = {
+                '💻 온라인 부모 상담 및 교육': '화상통화를 통한 부모님 대상 상담과 가정에서 적용할 수 있는 교육 프로그램',
+                '👶 온라인 아동 상담 및 치료': '아이와 직접 화상으로 진행하는 개별 맞춤 치료 프로그램',
+                '🏠 가정 방문 상담 및 치료(홈티)': '치료사가 직접 가정을 방문하여 아이의 익숙한 환경에서 진행하는 치료',
+                '🏥 센터 방문 상담 및 치료': '전문 센터에서 체계적인 시설과 도구를 활용한 대면 치료'
+            };
+            
+            return selectedMethods.map(method => ({
+                name: method,
+                description: descriptions[method] || '전문적인 치료 서비스를 제공합니다'
+            }));
+        }
+
+        // 치료 방식 파싱 (기존 텍스트 방식 - 호환성 유지)
+        function parseTreatmentMethods(methodsText) {
+            if (!methodsText) return [];
+            
+            const descriptions = {
+                '💻 온라인 부모 상담 및 교육': '화상통화를 통한 부모님 대상 상담과 가정에서 적용할 수 있는 교육 프로그램',
+                '👶 온라인 아동 상담 및 치료': '아이와 직접 화상으로 진행하는 개별 맞춤 치료 프로그램',
+                '🏠 가정 방문 상담 및 치료(홈티)': '치료사가 직접 가정을 방문하여 아이의 익숙한 환경에서 진행하는 치료',
+                '🏥 센터 방문 상담 및 치료': '전문 센터에서 체계적인 시설과 도구를 활용한 대면 치료'
+            };
+            
+            return methodsText.split('\n')
+                .filter(line => line.trim())
+                .map(line => ({
+                    name: line.trim(),
+                    description: descriptions[line.trim()] || '전문적인 치료 서비스를 제공합니다'
+                }));
+        }
+
+        // 자격증 파싱
+        function parseCertifications(certsText) {
+            if (!certsText) return [];
+            
+            return certsText.split('\n')
+                .filter(line => line.trim())
+                .map(line => {
+                    const parts = line.split('|');
+                    return {
+                        name: parts[0].trim(),
+                        detail: parts[1] ? parts[1].trim() : '보유'
+                    };
+                });
+        }
+
+        // 경력 파싱
+        function parseExperience(expText) {
+            if (!expText) return [];
+            
+            return expText.split('\n')
+                .filter(line => line.trim())
+                .map(line => {
+                    const parts = line.split('|');
+                    return {
+                        period: parts[0] ? parts[0].trim() : '',
+                        role: parts[1] ? parts[1].trim() : '',
+                        description: parts[2] ? parts[2].trim() : ''
+                    };
+                });
+        }
+
+        // 학력 파싱
+        function parseEducation(eduText) {
+            if (!eduText) return { master: null, bachelor: null };
+            
+            const lines = eduText.split('\n').filter(line => line.trim());
+            const education = { master: null, bachelor: null };
+            
+            lines.forEach(line => {
+                const parts = line.split('|');
+                if (parts.length >= 3) {
+                    const level = parts[0].trim();
+                    const data = {
+                        degree: `${level} (${parts[2].trim()} 전공)`,
+                        school: parts[1].trim(),
+                        major: parts[2].trim()
+                    };
+                    
+                    if (level.includes('석사')) {
+                        education.master = data;
+                    } else {
+                        education.bachelor = data;
+                    }
+                }
+            });
+            
+            return education;
+        }
+
+        // 교육 이수 파싱
+        function parseTraining(trainingText) {
+            if (!trainingText) return [];
+            
+            return trainingText.split('\n')
+                .filter(line => line.trim())
+                .map(line => line.trim());
+        }
+
+        // 후기 파싱
+        function parseReviews(reviewsText) {
+            if (!reviewsText) return [];
+            
+            return reviewsText.split('\n')
+                .filter(line => line.trim())
+                .map(line => {
+                    const parts = line.split('|');
+                    return {
+                        author: parts[0] ? parts[0].trim() : '보호자',
+                        rating: parts[1] ? parseInt(parts[1]) : 5,
+                        content: parts[2] ? parts[2].trim() : line.trim(),
+                        date: '2024.12.01'
+                    };
+                });
+        }
+
+        // 치료사 저장
+        async function saveTherapist(therapistData) {
+            try {
+                const therapistId = generateTherapistId(therapistData.name);
+                
+                if (editingTherapistId) {
+                    // 수정 모드
+                    await db.collection('therapists').doc(editingTherapistId).update(therapistData);
+                    showStatus('치료사 정보가 수정되었습니다!');
+                    editingTherapistId = null;
+                } else {
+                    // 새로 추가
+                    await db.collection('therapists').doc(therapistId).set(therapistData);
+                    showStatus('새 치료사가 추가되었습니다!');
+                }
+                
+                clearForm();
+                loadTherapists();
+            } catch (error) {
+                console.error('저장 오류:', error);
+                showStatus('저장 중 오류가 발생했습니다: ' + error.message, 'error');
+            }
+        }
+
+        // 치료사 ID 생성
+        function generateTherapistId(name) {
+            return name.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-가-힣]/g, '');
+        }
+
+        // 치료사 목록 로드
+        async function loadTherapists() {
+            const container = document.getElementById('therapistListContainer');
+            container.innerHTML = '<div class="loading">Firebase에서 데이터를 불러오는 중...</div>';
+            
+            try {
+                const snapshot = await db.collection('therapists').get();
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<p>등록된 치료사가 없습니다.</p>';
+                    return;
+                }
+                
+                let html = '<div class="therapist-list">';
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="therapist-item">
+                            <div class="therapist-info">
+                                <h3>${data.image} ${data.name}</h3>
+                                <p><strong>전문분야:</strong> ${data.specialty}</p>
+                                <p><strong>소개:</strong> ${data.intro}</p>
+                                <p><strong>센터:</strong> ${data.centerInfo?.isPublic ? data.centerInfo.name : '비공개'}</p>
+                            </div>
+                            <div class="therapist-actions">
+                                <button class="btn btn-small" onclick="editTherapist('${doc.id}')">✏️ 수정</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteTherapist('${doc.id}', '${data.name}')">🗑️ 삭제</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('로드 오류:', error);
+                container.innerHTML = `<p style="color: red;">데이터 로드 중 오류가 발생했습니다: ${error.message}</p>`;
+            }
+        }
+
+        // 치료사 수정
+        async function editTherapist(therapistId) {
+            try {
+                const doc = await db.collection('therapists').doc(therapistId).get();
+                
+                if (!doc.exists) {
+                    showStatus('치료사 정보를 찾을 수 없습니다.', 'error');
+                    return;
+                }
+                
+                const data = doc.data();
+                editingTherapistId = therapistId;
+                
+                // 폼에 데이터 채우기
+                document.getElementById('name').value = data.name || '';
+                document.getElementById('intro').value = data.intro || '';
+                document.getElementById('specialty').value = data.specialty || '';
+                document.getElementById('image').value = data.image || '👩‍⚕️';
+                document.getElementById('mainSpecialty').value = data.mainSpecialty || '';
+                document.getElementById('subSpecialties').value = (data.subSpecialties || []).join(', ');
+                document.getElementById('centerName').value = data.centerInfo?.name || '';
+                document.getElementById('centerAddress').value = data.centerInfo?.address || '';
+                document.getElementById('centerPublic').checked = data.centerInfo?.isPublic || false;
+                document.getElementById('voucherSupport').value = data.voucherSupport || '';
+                
+                // 복잡한 필드들 변환
+                document.getElementById('strengths').value = formatStrengths(data.strengths);
+                setTreatmentMethodsCheckboxes(data.treatmentMethods);
+                document.getElementById('certifications').value = formatCertifications(data.certifications);
+                document.getElementById('experience').value = formatExperience(data.experience);
+                document.getElementById('education').value = formatEducation(data.education);
+                document.getElementById('training').value = (data.training || []).join('\n');
+                document.getElementById('reviews').value = formatReviews(data.reviews);
+                
+                // 추가 탭으로 이동
+                showTab('add-therapist');
+                showStatus('수정 모드로 전환되었습니다. 폼을 수정하고 저장하세요.');
+                
+            } catch (error) {
+                console.error('수정 오류:', error);
+                showStatus('수정 중 오류가 발생했습니다: ' + error.message, 'error');
+            }
+        }
+
+        // 데이터 포맷 함수들
+        function formatStrengths(strengths) {
+            if (!strengths || !Array.isArray(strengths)) return '';
+            return strengths.map(s => `${s.icon} ${s.title}|${s.description}`).join('\n');
+        }
+
+        function setTreatmentMethodsCheckboxes(methods) {
+            // 모든 체크박스 초기화
+            document.querySelectorAll('input[name="treatmentMethods"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // 해당하는 체크박스 선택
+            if (methods && Array.isArray(methods)) {
+                methods.forEach(method => {
+                    const checkbox = document.querySelector(`input[name="treatmentMethods"][value="${method.name}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        }
+
+        function formatTreatmentMethods(methods) {
+            if (!methods || !Array.isArray(methods)) return '';
+            return methods.map(m => m.name).join('\n');
+        }
+
+        function formatCertifications(certs) {
+            if (!certs || !Array.isArray(certs)) return '';
+            return certs.map(c => `${c.name}|${c.detail}`).join('\n');
+        }
+
+        function formatExperience(exp) {
+            if (!exp || !Array.isArray(exp)) return '';
+            return exp.map(e => `${e.period}|${e.role}|${e.description}`).join('\n');
+        }
+
+        function formatEducation(edu) {
+            if (!edu) return '';
+            let result = [];
+            if (edu.master) {
+                result.push(`석사|${edu.master.school}|${edu.master.major}`);
+            }
+            if (edu.bachelor) {
+                result.push(`학사|${edu.bachelor.school}|${edu.bachelor.major}`);
+            }
+            return result.join('\n');
+        }
+
+        function formatReviews(reviews) {
+            if (!reviews || !Array.isArray(reviews)) return '';
+            return reviews.map(r => `${r.author}|${r.rating}|${r.content}`).join('\n');
+        }
+
+        // 치료사 삭제
+        async function deleteTherapist(therapistId, therapistName) {
+            if (!confirm(`정말로 "${therapistName}" 치료사를 삭제하시겠습니까?`)) {
+                return;
+            }
+            
+            try {
+                await db.collection('therapists').doc(therapistId).delete();
+                showStatus('치료사가 삭제되었습니다.');
+                loadTherapists();
+            } catch (error) {
+                console.error('삭제 오류:', error);
+                showStatus('삭제 중 오류가 발생했습니다: ' + error.message, 'error');
+            }
+        }
+
+        // 폼 초기화
+        function clearForm() {
+            document.getElementById('therapistForm').reset();
+            // 치료 방식 체크박스 초기화
+            document.querySelectorAll('input[name="treatmentMethods"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            editingTherapistId = null;
+        }
+
+        // 폼 제출 이벤트
+        document.getElementById('therapistForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const therapistData = parseFormData(formData);
+            
+            await saveTherapist(therapistData);
+        });
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            // 인증 확인
+            checkAuthentication();
+            
+            // 로그인 폼 이벤트
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const password = document.getElementById('passwordInput').value;
+                handleLogin(password);
+            });
+            
+            // 인증된 경우에만 치료사 목록 로드
+            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+                loadTherapists();
+            }
+        });
+    </script>
+</body>
+</html>
