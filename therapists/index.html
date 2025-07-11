@@ -610,7 +610,7 @@
   <header class="header">
     <div class="container">
       <div class="header-content">
-        <a href="javascript:history.back()" class="back-btn">← 뒤로가기</a>
+        <a href="index.html" class="back-btn">← 홈으로</a>
         <div class="logo">아이티움</div>
         <a href="https://itium0830.github.io/my-itium-site/survey" class="contact-btn">상담 신청</a>
       </div>
@@ -980,16 +980,55 @@
         training: ['전문 과정 수료'],
         reviews: [
           {
-            author: '보호자',
+            author: '김**님',
             rating: 5,
-            content: '만족스러운 치료를 받았습니다.',
+            content: '정말 만족스러운 치료를 받았습니다. 전문적이고 친절하세요.',
             date: '2024.12.01'
+          },
+          {
+            author: '이**님',
+            rating: 4,
+            content: '아이가 많이 좋아졌어요. 감사합니다.',
+            date: '2024.11.15'
+          },
+          {
+            author: '박**님',
+            rating: 5,
+            content: '체계적인 치료 프로그램이 인상적이었습니다.',
+            date: '2024.10.28'
           }
         ]
       }
     };
 
-    // URL에서 치료사 ID 가져오기
+    // 평점 계산 및 표시
+    function calculateAndDisplayRating(reviews) {
+      if (!reviews || reviews.length === 0) {
+        document.getElementById('ratingStars').textContent = '☆☆☆☆☆';
+        document.getElementById('ratingText').textContent = '0.0 (0 후기)';
+        document.getElementById('reviewCount').textContent = '0';
+        return;
+      }
+
+      // 평균 평점 계산
+      const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 5), 0);
+      const averageRating = totalRating / reviews.length;
+      const roundedRating = Math.round(averageRating * 10) / 10; // 소수점 1자리
+
+      // 별표 표시 (꽉 찬 별과 빈 별)
+      const fullStars = Math.floor(averageRating);
+      const hasHalfStar = averageRating - fullStars >= 0.5;
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+      
+      let starsDisplay = '★'.repeat(fullStars);
+      if (hasHalfStar) starsDisplay += '⭐';
+      starsDisplay += '☆'.repeat(emptyStars);
+
+      // 평점 정보 업데이트
+      document.getElementById('ratingStars').textContent = starsDisplay;
+      document.getElementById('ratingText').textContent = `${roundedRating}/5 (${reviews.length} 후기)`;
+      document.getElementById('reviewCount').textContent = reviews.length;
+    }
     function getTherapistIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get('id') || 'sample-therapist';
@@ -1128,8 +1167,9 @@
           therapist.training.map(t => `<div class="training-item">${t}</div>`).join('');
       }
 
-      // 후기
+      // 후기 및 평점
       if (therapist.reviews && therapist.reviews.length > 0) {
+        // 후기 표시
         document.getElementById('reviews').innerHTML = 
           therapist.reviews.map(r => `
             <div class="review-item">
@@ -1141,6 +1181,13 @@
               <div class="review-date">${r.date}</div>
             </div>
           `).join('');
+        
+        // 평점 계산 및 표시
+        calculateAndDisplayRating(therapist.reviews);
+      } else {
+        // 후기가 없는 경우
+        document.getElementById('reviews').innerHTML = '<p>아직 등록된 후기가 없습니다.</p>';
+        calculateAndDisplayRating([]);
       }
 
       // 페이지 제목
