@@ -610,7 +610,7 @@
   <header class="header">
     <div class="container">
       <div class="header-content">
-        <a href="index.html" class="back-btn">← 홈으로</a>
+        <a href="https://itium0830.github.io/my-itium-site" class="back-btn">← 홈으로</a>
         <div class="logo">아이티움</div>
         <a href="https://itium0830.github.io/my-itium-site/survey" class="contact-btn">상담 신청</a>
       </div>
@@ -1001,33 +1001,57 @@
       }
     };
 
-    // 평점 계산 및 표시
+    // 평점 계산 및 표시 (실제 요소 기반)
     function calculateAndDisplayRating(reviews) {
+      console.log('평점 계산 함수 호출, 후기 데이터:', reviews);
+      
       if (!reviews || reviews.length === 0) {
-        document.getElementById('ratingStars').textContent = '☆☆☆☆☆';
-        document.getElementById('ratingText').textContent = '0.0 (0 후기)';
-        document.getElementById('reviewCount').textContent = '0';
+        // 후기가 없는 경우 기본값 유지
+        console.log('후기가 없어서 기본값 유지');
         return;
       }
 
       // 평균 평점 계산
       const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 5), 0);
       const averageRating = totalRating / reviews.length;
-      const roundedRating = Math.round(averageRating * 10) / 10; // 소수점 1자리
-
-      // 별표 표시 (꽉 찬 별과 빈 별)
-      const fullStars = Math.floor(averageRating);
-      const hasHalfStar = averageRating - fullStars >= 0.5;
-      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+      const roundedRating = Math.round(averageRating * 10) / 10;
       
-      let starsDisplay = '★'.repeat(fullStars);
-      if (hasHalfStar) starsDisplay += '⭐';
-      starsDisplay += '☆'.repeat(emptyStars);
+      console.log('계산된 평균 평점:', roundedRating, '후기 갯수:', reviews.length);
 
-      // 평점 정보 업데이트
-      document.getElementById('ratingStars').textContent = starsDisplay;
-      document.getElementById('ratingText').textContent = `${roundedRating}/5 (${reviews.length} 후기)`;
-      document.getElementById('reviewCount').textContent = reviews.length;
+      // 실제 존재하는 요소들로 업데이트
+      const starsElement = document.querySelector('.stars');
+      const ratingTextElement = document.querySelector('.rating-text');
+      
+      // 별표 업데이트
+      if (starsElement) {
+        const fullStars = Math.floor(averageRating);
+        const hasHalfStar = averageRating - fullStars >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        
+        let starsDisplay = '★'.repeat(fullStars);
+        if (hasHalfStar) starsDisplay += '⭐';
+        starsDisplay += '☆'.repeat(emptyStars);
+        
+        starsElement.textContent = starsDisplay;
+        console.log('별표 업데이트 완료:', starsDisplay);
+      }
+      
+      // 평점 텍스트 업데이트
+      if (ratingTextElement) {
+        ratingTextElement.textContent = `${roundedRating}/5 (${reviews.length} 후기)`;
+        console.log('평점 텍스트 업데이트 완료:', `${roundedRating}/5 (${reviews.length} 후기)`);
+      }
+      
+      // 후기 갯수 업데이트 (section title에서)
+      const allH3 = Array.from(document.querySelectorAll('h3'));
+      const reviewSection = allH3.find(h => h.textContent.includes('후기'));
+      if (reviewSection) {
+        reviewSection.innerHTML = `
+          <span class="section-icon">💬</span>
+          후기 (${reviews.length}개)
+        `;
+        console.log('후기 섹션 제목 업데이트 완료:', `후기 (${reviews.length}개)`);
+      }
     }
     function getTherapistIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -1061,11 +1085,61 @@
 
     // 치료사 정보 화면에 표시
     function displayTherapistInfo(therapist) {
+      console.log('치료사 정보 표시 시작:', therapist); // 디버깅용
+      
       // 기본 정보
       document.getElementById('profileImage').textContent = therapist.image || '👨‍⚕️';
       document.getElementById('therapistName').textContent = therapist.name || '치료사';
       document.getElementById('therapistIntro').textContent = therapist.intro || '';
       document.getElementById('therapistSpecialty').textContent = therapist.specialty || '';
+      
+      // **먼저 평점과 후기 갯수 처리** (가장 중요!)
+      console.log('후기 데이터 확인:', therapist.reviews);
+      
+      if (therapist.reviews && therapist.reviews.length > 0) {
+        console.log('후기 갯수:', therapist.reviews.length);
+        
+        // 평점 계산 및 표시 (사이드바)
+        calculateAndDisplayRating(therapist.reviews);
+        
+        // 후기 섹션 제목 업데이트
+        const reviewCountElement = document.getElementById('reviewCount');
+        if (reviewCountElement) {
+          reviewCountElement.textContent = therapist.reviews.length.toString();
+          console.log('후기 갯수 업데이트 완료:', therapist.reviews.length);
+        }
+        
+        // 후기 내용 표시
+        const reviewsContainer = document.getElementById('reviews');
+        if (reviewsContainer) {
+          reviewsContainer.innerHTML = 
+            therapist.reviews.map(r => `
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="review-author">${r.author}</div>
+                  <div class="review-rating">${'★'.repeat(r.rating || 5)}</div>
+                </div>
+                <div class="review-content">${r.content}</div>
+                <div class="review-date">${r.date}</div>
+              </div>
+            `).join('');
+        }
+      } else {
+        console.log('후기가 없음');
+        
+        // 후기가 없는 경우
+        calculateAndDisplayRating([]);
+        
+        const reviewCountElement = document.getElementById('reviewCount');
+        if (reviewCountElement) {
+          reviewCountElement.textContent = '0';
+        }
+        
+        const reviewsContainer = document.getElementById('reviews');
+        if (reviewsContainer) {
+          reviewsContainer.innerHTML = '<p>아직 등록된 후기가 없습니다.</p>';
+        }
+      }
       
       // 센터 정보 (공개/비공개 처리)
       const centerInfo = therapist.centerInfo;
@@ -1167,31 +1241,10 @@
           therapist.training.map(t => `<div class="training-item">${t}</div>`).join('');
       }
 
-      // 후기 및 평점
-      if (therapist.reviews && therapist.reviews.length > 0) {
-        // 후기 표시
-        document.getElementById('reviews').innerHTML = 
-          therapist.reviews.map(r => `
-            <div class="review-item">
-              <div class="review-header">
-                <div class="review-author">${r.author}</div>
-                <div class="review-rating">${'★'.repeat(r.rating || 5)}</div>
-              </div>
-              <div class="review-content">${r.content}</div>
-              <div class="review-date">${r.date}</div>
-            </div>
-          `).join('');
-        
-        // 평점 계산 및 표시
-        calculateAndDisplayRating(therapist.reviews);
-      } else {
-        // 후기가 없는 경우
-        document.getElementById('reviews').innerHTML = '<p>아직 등록된 후기가 없습니다.</p>';
-        calculateAndDisplayRating([]);
-      }
-
       // 페이지 제목
       document.title = `${therapist.name} - 아이티움`;
+      
+      console.log('치료사 정보 표시 완료');
     }
 
     // 더 많은 치료사들 로드 (Firebase에서) - 디버깅 추가
@@ -1261,6 +1314,7 @@
 
     // 페이지 로드 시 실행
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('페이지 로드 완료');
       loadTherapistInfo();
       loadMoreTherapists();
     });
