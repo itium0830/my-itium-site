@@ -1,6 +1,44 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <!-- Meta Pixel (noscript) -->
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=2091206587958981&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+
+  <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-T469LWC7');
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6RKPWNBB69"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}  
+  gtag('js', new Date());
+  gtag('config', 'G-6RKPWNBB69');
+  </script>
+  <!-- Clarity 코드 -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "rb32tct984");
+  </script>
+
+  <!-- 라이트 모드 강제 -->
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+         
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>치료사 목록 - 아이티움</title>
@@ -464,8 +502,8 @@
                 </div>
                 
                 <div class="filter-group">
-                    <span class="filter-label">지역 :</span>
-                    <select class="filter-select" id="locationFilter" onchange="applyFilters()">
+                    <span class="filter-label">활동지역 :</span>
+                    <select class="filter-select" id="activityAreaFilter" onchange="applyFilters()">
                         <option value="all">전체 지역</option>
                         <option value="서울">서울</option>
                         <option value="경기">경기</option>
@@ -475,7 +513,17 @@
                         <option value="대전">대전</option>
                         <option value="광주">광주</option>
                         <option value="울산">울산</option>
-                        <option value="기타">기타</option>
+                        <option value="세종">세종</option>
+                        <option value="강원">강원</option>
+                        <option value="충북">충북</option>
+                        <option value="충남">충남</option>
+                        <option value="전북">전북</option>
+                        <option value="전남">전남</option>
+                        <option value="경북">경북</option>
+                        <option value="경남">경남</option>
+                        <option value="제주">제주</option>
+                        <option value="온라인">온라인</option>
+                        <option value="전국">전국</option>
                     </select>
                 </div>
                 
@@ -497,7 +545,8 @@
             <select class="sort-select" id="sortSelect" onchange="applySorting()">
                 <option value="name">이름순</option>
                 <option value="specialty">전문분야순</option>
-                <option value="location">지역순</option>
+                <option value="activity-area">활동지역순</option>
+                <option value="location">센터순</option>
             </select>
         </div>
         
@@ -563,19 +612,25 @@
             }
         }
 
-        // 치료사 카드 HTML 생성
+        // 치료사 카드 HTML 생성 (센터 정보와 활동지역 분리 표시)
         function createTherapistCard(therapist) {
+            // 센터 정보 표시
             const centerDisplay = therapist.centerInfo && therapist.centerInfo.isPublic 
                 ? `<div class="center-name">${therapist.centerInfo.name}</div>
                    <div class="center-support">${therapist.voucherSupport || ''}</div>`
                 : `<div class="center-name">🔒 비공개</div>
                    <div class="center-support">상담 신청 시 안내</div>`;
 
+            // 전문분야 배지 (최대 2개)
             const badges = therapist.subSpecialties && therapist.subSpecialties.length > 0
-                ? therapist.subSpecialties.slice(0, 3).map(specialty => 
+                ? therapist.subSpecialties.slice(0, 2).map(specialty => 
                     `<span class="badge">${specialty}</span>`
                   ).join('')
                 : `<span class="badge">${therapist.mainSpecialty || '전문치료'}</span>`;
+
+            // 활동지역 배지 (별도로 표시)
+            const activityAreaBadge = therapist.activityArea ? 
+                `<span class="badge" style="background: #FFE5B4; color: #B8860B;">🗺️ ${therapist.activityArea}</span>` : '';
 
             return `
                 <div class="therapist-card" onclick="openTherapistDetail('${therapist.id}')">
@@ -590,6 +645,7 @@
                             
                             <div class="card-badges">
                                 ${badges}
+                                ${activityAreaBadge}
                             </div>
                             
                             <div class="card-center">
@@ -696,11 +752,11 @@
             }
         }
 
-        // 필터 적용
+        // 필터 적용 함수 (활동지역 필터 포함)
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const specialtyFilter = document.querySelector('.filter-btn.active').dataset.specialty;
-            const locationFilter = document.getElementById('locationFilter').value;
+            const activityAreaFilter = document.getElementById('activityAreaFilter').value;
             const voucherFilter = document.getElementById('voucherFilter').value;
 
             filteredTherapists = allTherapists.filter(therapist => {
@@ -716,16 +772,16 @@
                     (therapist.specialty && therapist.specialty.includes(specialtyFilter)) ||
                     (therapist.subSpecialties && therapist.subSpecialties.includes(specialtyFilter));
 
-                // 지역 필터
-                const matchesLocation = locationFilter === 'all' ||
-                    (therapist.centerInfo && therapist.centerInfo.name && therapist.centerInfo.name.includes(locationFilter));
+                // 활동지역 필터 (주관식 입력된 텍스트에서 검색)
+                const matchesActivityArea = activityAreaFilter === 'all' ||
+                    (therapist.activityArea && therapist.activityArea.includes(activityAreaFilter));
 
                 // 바우처 필터
                 const matchesVoucher = voucherFilter === 'all' ||
                     (voucherFilter === 'available' && therapist.voucherSupport && therapist.voucherSupport.includes('바우처')) ||
                     (voucherFilter === 'not-available' && therapist.voucherSupport && therapist.voucherSupport.includes('실비'));
 
-                return matchesSearch && matchesSpecialty && matchesLocation && matchesVoucher;
+                return matchesSearch && matchesSpecialty && matchesActivityArea && matchesVoucher;
             });
 
             currentPage = 1;
@@ -733,7 +789,7 @@
             updateResultsCount();
         }
 
-        // 정렬 적용
+        // 정렬 적용 함수 (활동지역 정렬 포함)
         function applySorting() {
             const sortBy = document.getElementById('sortSelect').value;
             
@@ -743,6 +799,8 @@
                         return a.name.localeCompare(b.name);
                     case 'specialty':
                         return (a.specialty || '').localeCompare(b.specialty || '');
+                    case 'activity-area':
+                        return (a.activityArea || '').localeCompare(b.activityArea || '');
                     case 'location':
                         const aLocation = a.centerInfo?.name || '';
                         const bLocation = b.centerInfo?.name || '';

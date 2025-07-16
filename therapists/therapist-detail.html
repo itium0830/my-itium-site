@@ -1,6 +1,44 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <!-- Meta Pixel (noscript) -->
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=2091206587958981&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+
+  <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-T469LWC7');
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6RKPWNBB69"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}  
+  gtag('js', new Date());
+  gtag('config', 'G-6RKPWNBB69');
+  </script>
+  <!-- Clarity 코드 -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "rb32tct984");
+  </script>
+
+  <!-- 라이트 모드 강제 -->
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+       
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>치료사 상세 정보 - 아이티움</title>
@@ -940,6 +978,7 @@
         intro: '치료사 정보를 준비 중입니다',
         specialty: '전문 치료',
         image: '👨‍⚕️',
+        activityArea: '서울',
         centerInfo: {
           isPublic: false,
           displayText: '🔒 비공개 (상담 신청 시 안내)'
@@ -1001,7 +1040,7 @@
       }
     };
 
-    // 평점 계산 및 표시 (SyntaxError 수정 버전)
+    // 평점 계산 및 표시
     function calculateAndDisplayRating(reviews) {
       console.log('평점 계산 함수 호출, 후기 데이터:', reviews);
       
@@ -1026,85 +1065,16 @@
       if (hasHalfStar) starsDisplay += '⭐';
       starsDisplay += '☆'.repeat(emptyStars);
       
-      // 별표 요소 찾기 (유효한 셀렉터만 사용)
+      // 별표 요소 찾기
       const starsElement = document.querySelector('.stars') || 
                           document.querySelector('.therapist-rating .stars') ||
                           document.querySelector('[class*="star"]');
       
-      console.log('별표 요소 찾기:', starsElement);
-      
       if (starsElement) {
         starsElement.textContent = starsDisplay;
-        console.log('✅ 별표 업데이트 완료:', starsDisplay);
-      } else {
-        // 별표 요소를 못 찾으면 모든 요소에서 ★★★★★ 텍스트 직접 교체
-        console.log('별표 요소를 찾을 수 없어서 텍스트 기반 교체 시도');
-        const allElements = document.querySelectorAll('*');
-        let starUpdated = false;
-        
-        allElements.forEach(el => {
-          if (el.textContent === '★★★★★' && el.children.length === 0) {
-            el.textContent = starsDisplay;
-            el.style.border = '3px solid red'; // 시각적 확인용
-            el.style.backgroundColor = 'yellow'; // 시각적 확인용
-            console.log('✅ 텍스트 기반 별표 업데이트 완료:', starsDisplay);
-            starUpdated = true;
-          }
-        });
-        
-        if (!starUpdated) {
-          console.log('❌ 별표 업데이트 실패');
-        }
       }
       
-      // 평점 텍스트 요소 찾기 (유효한 셀렉터만 사용)
-      const ratingTextElement = document.querySelector('.rating-text') ||
-                               document.querySelector('.therapist-rating .rating-text') ||
-                               document.querySelector('[class*="rating"]');
-      
-      console.log('평점 텍스트 요소 찾기:', ratingTextElement);
-      
-      if (ratingTextElement) {
-        ratingTextElement.textContent = `${roundedRating}/5 (${reviews.length} 후기)`;
-        console.log('✅ 평점 텍스트 업데이트 완료:', `${roundedRating}/5 (${reviews.length} 후기)`);
-      } else {
-        // 평점 텍스트 요소를 못 찾으면 패턴 매칭으로 직접 교체
-        console.log('평점 텍스트 요소를 찾을 수 없어서 텍스트 기반 교체 시도');
-        const allElements = document.querySelectorAll('*');
-        let ratingUpdated = false;
-        
-        allElements.forEach(el => {
-          // "5.0/5 (0 후기)" 같은 패턴 찾기
-          if (el.textContent && 
-              el.textContent.match(/\d+\.\d+\/5.*?\d+.*?후기/) && 
-              el.children.length === 0) {
-            el.textContent = `${roundedRating}/5 (${reviews.length} 후기)`;
-            el.style.border = '3px solid blue'; // 시각적 확인용
-            el.style.backgroundColor = 'lightgreen'; // 시각적 확인용
-            console.log('✅ 텍스트 기반 평점 업데이트 완료:', `${roundedRating}/5 (${reviews.length} 후기)`);
-            ratingUpdated = true;
-          }
-        });
-        
-        if (!ratingUpdated) {
-          console.log('❌ 평점 텍스트 업데이트 실패');
-          
-          // 추가 시도: "5.0 (0 후기)" 패턴도 찾기
-          allElements.forEach(el => {
-            if (el.textContent && 
-                el.textContent.match(/\d+\.\d+.*?\(\d+.*?후기\)/) && 
-                el.children.length === 0) {
-              el.textContent = `${roundedRating}/5 (${reviews.length} 후기)`;
-              el.style.border = '3px solid purple'; // 시각적 확인용
-              el.style.backgroundColor = 'orange'; // 시각적 확인용
-              console.log('✅ 대안 패턴으로 평점 업데이트 완료:', `${roundedRating}/5 (${reviews.length} 후기)`);
-              ratingUpdated = true;
-            }
-          });
-        }
-      }
-      
-      // 후기 갯수 업데이트 (이미 작동하고 있음)
+      // 후기 갯수 업데이트
       const allH3 = Array.from(document.querySelectorAll('h3'));
       const reviewSection = allH3.find(h => h.textContent.includes('후기'));
       if (reviewSection) {
@@ -1112,9 +1082,9 @@
           <span class="section-icon">💬</span>
           후기 (${reviews.length}개)
         `;
-        console.log('✅ 후기 섹션 제목 업데이트 완료:', `후기 (${reviews.length}개)`);
       }
     }
+
     function getTherapistIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get('id') || 'sample-therapist';
@@ -1145,9 +1115,9 @@
       displayTherapistInfo(therapist);
     }
 
-    // 치료사 정보 화면에 표시
+    // 치료사 정보 화면에 표시 (활동지역 분리 표시)
     function displayTherapistInfo(therapist) {
-      console.log('치료사 정보 표시 시작:', therapist); // 디버깅용
+      console.log('치료사 정보 표시 시작:', therapist);
       
       // 기본 정보
       document.getElementById('profileImage').textContent = therapist.image || '👨‍⚕️';
@@ -1155,31 +1125,50 @@
       document.getElementById('therapistIntro').textContent = therapist.intro || '';
       document.getElementById('therapistSpecialty').textContent = therapist.specialty || '';
       
-      // **먼저 평점과 후기 갯수 처리** (가장 중요!)
+      // 센터 정보와 활동지역을 분리하여 표시
+      const centerInfo = therapist.centerInfo;
+      let centerInfoHtml = '';
+      
+      // 센터 정보 부분
+      if (centerInfo && centerInfo.isPublic) {
+        centerInfoHtml = `
+          <strong>근무 센터</strong><br>
+          ${centerInfo.name}<br>
+          <small>📍 ${centerInfo.address}</small>
+        `;
+      } else {
+        centerInfoHtml = `
+          <strong>근무 센터</strong><br>
+          🔒 비공개 (상담 신청 시 안내)
+        `;
+      }
+      
+      // 활동지역 부분 (항상 별도로 표시)
+      const activityAreaHtml = therapist.activityArea ? 
+        `<div style="margin-top: 0.8rem; padding: 0.5rem; background: #F0F8FF; border-radius: 6px; border-left: 3px solid #05796B;">
+          <strong style="color: #05796B;">🗺️ 활동지역</strong><br>
+          <span>${therapist.activityArea}</span>
+        </div>` : '';
+      
+      // 바우처 지원 부분
+      const voucherHtml = therapist.voucherSupport ? 
+        `<div class="voucher-support">${therapist.voucherSupport}</div>` : '';
+      
+      // 전체 조합
+      document.getElementById('centerInfo').innerHTML = centerInfoHtml + activityAreaHtml + voucherHtml;
+
+      // 나머지 기존 로직들...
+      // 먼저 평점과 후기 갯수 처리
       console.log('=== 후기 데이터 상세 분석 ===');
       console.log('후기 데이터 전체:', therapist.reviews);
-      console.log('후기 데이터 타입:', typeof therapist.reviews);
-      console.log('후기 배열인가?', Array.isArray(therapist.reviews));
-      
-      if (therapist.reviews) {
-        console.log('후기 배열 길이:', therapist.reviews.length);
-        console.log('후기 각 항목:', therapist.reviews.map((r, i) => `${i}: ${JSON.stringify(r)}`));
-      }
       
       if (therapist.reviews && therapist.reviews.length > 0) {
         console.log('후기가 있다고 판단됨, 갯수:', therapist.reviews.length);
         
-        // 평점 계산 및 표시 (사이드바)
+        // 평점 계산 및 표시
         calculateAndDisplayRating(therapist.reviews);
         
         // 후기 섹션 제목 업데이트
-        const reviewCountElement = document.getElementById('reviewCount');
-        if (reviewCountElement) {
-          reviewCountElement.textContent = therapist.reviews.length.toString();
-          console.log('후기 갯수 업데이트 완료:', therapist.reviews.length);
-        }
-        
-        // 후기 섹션 제목 강제 업데이트
         const allH3 = Array.from(document.querySelectorAll('h3'));
         const reviewSection = allH3.find(h => h.textContent.includes('후기'));
         if (reviewSection) {
@@ -1187,7 +1176,6 @@
             <span class="section-icon">💬</span>
             후기 (${therapist.reviews.length}개)
           `;
-          console.log('후기 섹션 제목 강제 업데이트:', therapist.reviews.length);
         }
         
         // 후기 내용 표시
@@ -1204,19 +1192,9 @@
                 <div class="review-date">${r.date || '날짜 없음'}</div>
               </div>
             `).join('');
-          console.log('후기 내용 표시 완료');
         }
       } else {
         console.log('후기가 없다고 판단됨');
-        
-        // 후기가 없는 경우 - 0개로 표시
-        const reviewCountElement = document.getElementById('reviewCount');
-        if (reviewCountElement) {
-          reviewCountElement.textContent = '0';
-          console.log('후기 갯수를 0으로 설정');
-        }
-        
-        // 후기 섹션 제목을 0개로 업데이트
         const allH3 = Array.from(document.querySelectorAll('h3'));
         const reviewSection = allH3.find(h => h.textContent.includes('후기'));
         if (reviewSection) {
@@ -1224,7 +1202,6 @@
             <span class="section-icon">💬</span>
             후기 (0개)
           `;
-          console.log('후기 섹션 제목을 0개로 강제 설정');
         }
         
         const reviewsContainer = document.getElementById('reviews');
@@ -1232,27 +1209,10 @@
           reviewsContainer.innerHTML = '<p>아직 등록된 후기가 없습니다.</p>';
         }
         
-        // 평점도 기본값으로 설정
         calculateAndDisplayRating([]);
       }
-      
-      // 센터 정보 (공개/비공개 처리)
-      const centerInfo = therapist.centerInfo;
-      if (centerInfo && centerInfo.isPublic) {
-        document.getElementById('centerInfo').innerHTML = `
-          <strong>근무 센터</strong><br>
-          ${centerInfo.name}<br>
-          <small>📍 ${centerInfo.address}</small>
-          <div class="voucher-support">${therapist.voucherSupport}</div>
-        `;
-      } else if (centerInfo) {
-        document.getElementById('centerInfo').innerHTML = `
-          <strong>근무 센터</strong><br>
-          ${centerInfo.displayText || '🔒 비공개 (상담 신청 시 안내)'}
-        `;
-      }
 
-      // 전문분야 (주전문분야 + 부전문분야)
+      // 전문분야 표시
       if (therapist.mainSpecialty) {
         document.getElementById('mainSpecialty').textContent = therapist.mainSpecialty;
       }
@@ -1342,7 +1302,7 @@
       console.log('치료사 정보 표시 완료');
     }
 
-    // 더 많은 치료사들 로드 (Firebase에서) - 디버깅 추가
+    // 더 많은 치료사들 로드 (Firebase에서)
     async function loadMoreTherapists() {
       const currentTherapistId = getTherapistIdFromUrl();
       console.log('현재 치료사 ID:', currentTherapistId);
@@ -1351,7 +1311,6 @@
       console.log('Firebase에서 치료사 목록 가져오는 중...');
       const allTherapists = await loadAllTherapistsFromFirebase();
       console.log('Firebase에서 가져온 치료사 수:', allTherapists.length);
-      console.log('전체 치료사 목록:', allTherapists);
       
       // 현재 치료사 제외한 다른 치료사들 (최대 6명)
       const otherTherapists = allTherapists
@@ -1359,12 +1318,10 @@
         .slice(0, 6);
       
       console.log('현재 치료사 제외 후 다른 치료사 수:', otherTherapists.length);
-      console.log('표시할 치료사들:', otherTherapists);
       
       const moreTherapistsContainer = document.getElementById('moreTherapists');
       
       if (otherTherapists.length > 0) {
-        console.log('치료사 카드 생성 중...');
         moreTherapistsContainer.innerHTML = otherTherapists.map(therapist => `
           <div class="therapist-card" onclick="openTherapistDetail('${therapist.id}')">
             <div class="card-image">${therapist.image || '👨‍⚕️'}</div>
@@ -1374,23 +1331,14 @@
               <div class="card-experience">${therapist.mainSpecialty || ''}</div>
               <div class="card-badges">
                 ${(therapist.subSpecialties || []).slice(0, 3).map(badge => `<span class="badge">${badge}</span>`).join('')}
+                ${therapist.activityArea ? `<span class="badge" style="background: #FFE5B4; color: #B8860B;">🗺️ ${therapist.activityArea}</span>` : ''}
               </div>
             </div>
           </div>
         `).join('');
-        console.log('치료사 카드 생성 완료!');
       } else {
-        console.log('표시할 다른 치료사가 없음');
         moreTherapistsContainer.innerHTML = `
           <p>다른 치료사 정보를 불러오는 중입니다...</p>
-          <div style="background: #f0f0f0; padding: 1rem; margin-top: 1rem; border-radius: 8px;">
-            <strong>디버깅 정보:</strong><br>
-            현재 치료사 ID: ${currentTherapistId}<br>
-            Firebase에서 가져온 치료사 수: ${allTherapists.length}<br>
-            ${allTherapists.length === 0 ? 
-              '<span style="color: red;">⚠️ Firebase에서 치료사 데이터를 가져오지 못했습니다!</span>' : 
-              '✅ Firebase 연결 정상'}
-          </div>
         `;
       }
     }
@@ -1398,7 +1346,7 @@
     // 치료사 상세 페이지로 이동
     function openTherapistDetail(therapistId) {
       // 현재 페이지에서 ID만 변경하여 리로드
-      const currentUrl = window.location.href.split('?')[0]; // URL에서 파라미터 제거
+      const currentUrl = window.location.href.split('?')[0];
       window.location.href = `${currentUrl}?id=${therapistId}`;
     }
 

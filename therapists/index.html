@@ -1,6 +1,44 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head>    
+  <!-- Meta Pixel (noscript) -->
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=2091206587958981&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+
+  <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-T469LWC7');
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6RKPWNBB69"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}  
+  gtag('js', new Date());
+  gtag('config', 'G-6RKPWNBB69');
+  </script>
+  <!-- Clarity 코드 -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "rb32tct984");
+  </script>
+
+  <!-- 라이트 모드 강제 -->
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아이티움 - 아이 발달 전문 치료사 매칭 서비스</title>
@@ -30,6 +68,154 @@
             padding: 0 20px;
         }
 
+        /* 햄버거 네비게이션 */
+        .global-nav {
+            background: white;
+            padding: 15px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 햄버거 버튼 */
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: black;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* 메뉴 오버레이 */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #05796B;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-100%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 999;
+        }
+
+        .menu-overlay.active {
+            transform: translateY(0);
+        }
+
+        .menu-items {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-items li {
+            margin: 30px 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .menu-overlay.active .menu-items li {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .menu-overlay.active .menu-items li:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+
+        .menu-overlay.active .menu-items li:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+
+        .menu-overlay.active .menu-items li:nth-child(3) {
+            transition-delay: 0.3s;
+        }
+
+        .menu-items a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: 600;
+            padding: 15px 30px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-items a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.3s ease;
+        }
+
+        .menu-items a:hover::before {
+            left: 0;
+        }
+
+        .menu-items a:hover {
+            transform: translateY(-3px);
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         /* 히어로 섹션 */
         .header {
             background: linear-gradient(135deg, #05796B 0%, #0A9E8A 100%);
@@ -41,6 +227,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            margin-top: 80px; /* 네비게이션 공간 확보 */
         }
 
         .hero-container {
@@ -540,10 +727,40 @@
             .footer-logo { 
                 margin-bottom: 1em; 
             }
+
+            .menu-items a {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T469LWC7"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- 햄버거 네비게이션 -->
+  <nav class="global-nav">
+    <div class="nav-container">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 메뉴 오버레이 -->
+  <div class="menu-overlay" id="menuOverlay">
+    <ul class="menu-items">
+      <li><a href="index.html">🏠 보호자 전용</a></li>
+      <li><a href="therapist1/index.html">👩🏻‍⚕️ 치료사 전용</a></li>
+    </ul>
+  </div>
+    
     <div class="header">
         <div class="hero-container">
             <h1 class="hero-title">
@@ -567,7 +784,7 @@
                 <br>건강한 성장을 위한 전문 치료 서비스
             </p>
             
-            <button class="cta-button" onclick="requestConsultation()">상담 예약하기</button>
+            <button class="cta-button" onclick="requestConsultation()">전문가 매칭요청</button>
         </div>
         
     </div>
@@ -701,6 +918,42 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // 햄버거 메뉴 토글 기능
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const body = document.body;
+
+        hamburgerBtn.addEventListener('click', function() {
+            hamburgerBtn.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            
+            // 메뉴가 열릴 때 스크롤 방지
+            if (menuOverlay.classList.contains('active')) {
+                body.style.overflow = 'hidden';
+            } else {
+                body.style.overflow = 'auto';
+            }
+        });
+
+        // 메뉴 링크 클릭 시 메뉴 닫기
+        const menuLinks = document.querySelectorAll('.menu-items a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                hamburgerBtn.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                body.style.overflow = 'auto';
+            });
+        });
+
+        // ESC 키로 메뉴 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+                hamburgerBtn.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                body.style.overflow = 'auto';
+            }
+        });
+
         // Firebase에서 모든 치료사 데이터 가져오기
         async function loadAllTherapists() {
             try {
@@ -734,19 +987,25 @@
                 .replace(/[^a-z0-9-가-힣]/g, '');
         }
 
-        // 치료사 카드 HTML 생성 (가로형)
+        // 치료사 카드 HTML 생성 (센터 정보와 활동지역 분리 표시)
         function createTherapistCard(therapist) {
+            // 센터 정보 표시
             const centerDisplay = therapist.centerInfo && therapist.centerInfo.isPublic 
                 ? `<div class="center-name">${therapist.centerInfo.name}</div>
                    <div class="center-support">${therapist.voucherSupport || ''}</div>`
                 : `<div class="center-name">🔒 비공개</div>
                    <div class="center-support">상담 신청 시 안내</div>`;
 
+            // 전문분야 배지 (최대 2개)
             const badges = therapist.subSpecialties && therapist.subSpecialties.length > 0
-                ? therapist.subSpecialties.slice(0, 3).map(specialty => 
+                ? therapist.subSpecialties.slice(0, 2).map(specialty => 
                     `<span class="badge">${specialty}</span>`
                   ).join('')
                 : `<span class="badge">${therapist.mainSpecialty || '전문치료'}</span>`;
+
+            // 활동지역 배지 (별도로 표시)
+            const activityAreaBadge = therapist.activityArea ? 
+                `<span class="badge" style="background: #FFE5B4; color: #B8860B;">🗺️ ${therapist.activityArea}</span>` : '';
 
             return `
                 <div class="therapist-card" onclick="openTherapistDetail('${therapist.id}')">
@@ -761,6 +1020,7 @@
                             
                             <div class="card-badges">
                                 ${badges}
+                                ${activityAreaBadge}
                             </div>
                             
                             <div class="card-center">

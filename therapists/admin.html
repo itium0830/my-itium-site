@@ -123,6 +123,12 @@
             resize: vertical;
         }
 
+        .form-group small {
+            color: #666;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -449,6 +455,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="activityArea">활동지역 *</label>
+                        <input type="text" id="activityArea" name="activityArea" placeholder="예: 서울, 경기, 인천 / 온라인 / 전국" required>
+                        <small>💡 팁: 여러 지역은 쉼표로 구분하여 입력하세요 (예: 서울, 경기, 인천)</small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="centerName">근무 센터명</label>
                         <input type="text" id="centerName" name="centerName" placeholder="서울 강남 아동발달센터">
                     </div>
@@ -524,7 +536,7 @@
 
                     <div class="form-group full-width">
                         <label for="reviews">후기 (줄바꿈으로 구분)</label>
-                        <textarea id="reviews" name="reviews" placeholder="박**님|5|6세 아들이 발음이 부정확해서 걸정이 많았는데...&#10;이**님|5|말이 늦은 5세 딸을 데리고 갔는데..."></textarea>
+                        <textarea id="reviews" name="reviews" placeholder="박**님|5|6세 아들이 발음이 부정확해서 걱정이 많았는데...&#10;이**님|5|말이 늦은 5세 딸을 데리고 갔는데..."></textarea>
                     </div>
                 </div>
 
@@ -654,6 +666,7 @@
                 mainSpecialty: formData.get('mainSpecialty'),
                 subSpecialties: formData.get('subSpecialties') ? 
                     formData.get('subSpecialties').split(',').map(s => s.trim()).filter(s => s) : [],
+                activityArea: formData.get('activityArea'), // 활동지역 추가
                 centerInfo: {
                     isPublic: formData.get('centerPublic') === 'on',
                     name: formData.get('centerName') || '',
@@ -714,25 +727,6 @@
                 name: method,
                 description: descriptions[method] || '전문적인 치료 서비스를 제공합니다'
             }));
-        }
-
-        // 치료 방식 파싱 (기존 텍스트 방식 - 호환성 유지)
-        function parseTreatmentMethods(methodsText) {
-            if (!methodsText) return [];
-            
-            const descriptions = {
-                '💻 온라인 부모 상담 및 교육': '화상통화를 통한 부모님 대상 상담과 가정에서 적용할 수 있는 교육 프로그램',
-                '👶 온라인 아동 상담 및 치료': '아이와 직접 화상으로 진행하는 개별 맞춤 치료 프로그램',
-                '🏠 가정 방문 상담 및 치료(홈티)': '치료사가 직접 가정을 방문하여 아이의 익숙한 환경에서 진행하는 치료',
-                '🏥 센터 방문 상담 및 치료': '전문 센터에서 체계적인 시설과 도구를 활용한 대면 치료'
-            };
-            
-            return methodsText.split('\n')
-                .filter(line => line.trim())
-                .map(line => ({
-                    name: line.trim(),
-                    description: descriptions[line.trim()] || '전문적인 치료 서비스를 제공합니다'
-                }));
         }
 
         // 자격증 파싱
@@ -873,6 +867,7 @@
                             <div class="therapist-info">
                                 <h3>${data.image} ${data.name}</h3>
                                 <p><strong>전문분야:</strong> ${data.specialty}</p>
+                                <p><strong>활동지역:</strong> ${data.activityArea || '미설정'}</p>
                                 <p><strong>소개:</strong> ${data.intro}</p>
                                 <p><strong>센터:</strong> ${data.centerInfo?.isPublic ? data.centerInfo.name : '비공개'}</p>
                             </div>
@@ -913,6 +908,7 @@
                 document.getElementById('image').value = data.image || '👩‍⚕️';
                 document.getElementById('mainSpecialty').value = data.mainSpecialty || '';
                 document.getElementById('subSpecialties').value = (data.subSpecialties || []).join(', ');
+                document.getElementById('activityArea').value = data.activityArea || ''; // 활동지역 추가
                 document.getElementById('centerName').value = data.centerInfo?.name || '';
                 document.getElementById('centerAddress').value = data.centerInfo?.address || '';
                 document.getElementById('centerPublic').checked = data.centerInfo?.isPublic || false;
@@ -958,11 +954,6 @@
                     }
                 });
             }
-        }
-
-        function formatTreatmentMethods(methods) {
-            if (!methods || !Array.isArray(methods)) return '';
-            return methods.map(m => m.name).join('\n');
         }
 
         function formatCertifications(certs) {
