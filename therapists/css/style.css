@@ -1,0 +1,641 @@
+/* 강제 라이트 모드 (다크 모드 무시) */
+html { color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  body { background-color: #ffffff !important; color: #000000 !important; }
+}
+
+/* Reset & 기본 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 페이지 전체 스크롤 개선 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 히어로 섹션 */
+.header {
+    background: linear-gradient(135deg, #05796B 0%, #0A9E8A 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.hero-container {
+    text-align: center;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    font-weight: 300;
+    line-height: 1.3;
+}
+
+.therapy-highlight {
+    display: inline-block;
+    background: #2c2c2c;
+    color: #ffd700;
+    padding: 0.5rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    margin: 0 0.5rem;
+    position: relative;
+    overflow: hidden;
+    min-width: 280px;
+    height: 80px;
+    line-height: 80px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.therapy-word {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.therapy-word.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.therapy-word.prev {
+    opacity: 0;
+    transform: translateY(-100%);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 2rem;
+    font-weight: 300;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.cta-button {
+    display: inline-block;
+    margin-top: 3rem;
+    padding: 1rem 2.5rem;
+    background: #ffffff;
+    color: #05796B;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    border: none;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+    background: #f8f8f8;
+}
+
+/* 스크롤 다운 힌트 */
+.scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    animation: bounce 2s infinite;
+    cursor: pointer;
+    user-select: none;
+}
+
+.scroll-hint:hover {
+    color: white;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-10px); }
+    60% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* 메인 섹션 */
+.main-section {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #05796B;
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 치료사 목록 - 가로 넓은 카드 */
+.therapists-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.therapist-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex; /* 가로 배치 */
+    min-height: 180px;
+    width: 100%; /* 전체 너비 차지 */
+}
+
+.therapist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #05796B, #077A66);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.card-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+}
+
+.card-specialty {
+    font-size: 1rem;
+    opacity: 0.9;
+    line-height: 1.2;
+}
+
+.card-body {
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-intro {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.badge {
+    background: #E8F5F3;
+    color: #05796B;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.card-center {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.center-name {
+    font-weight: 600;
+    color: #05796B;
+    margin-bottom: 0.3rem;
+}
+
+.center-support {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.card-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #05796B;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #046A5C;
+}
+
+.btn-secondary {
+    background: white;
+    color: #05796B;
+    border: 2px solid #05796B;
+}
+
+.btn-secondary:hover {
+    background: #05796B;
+    color: white;
+}
+
+/* 로딩 상태 */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #05796B;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Section1~3: Full-image sections */
+.full-image-sections {
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.full-image-sections .full-img {
+    width: 100%;
+    margin: 2rem auto;
+    border-radius: 0;
+}
+
+/* CTA Footer (Section3) */
+.cta-footer {
+    background: #05796B;
+    color: #fff;
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.cta-footer h2 {
+    font-size: 2rem;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+}
+
+.cta-footer h2 span {
+    color: #FFD99B;
+}
+
+.btn-cta {
+    padding: 1rem 2.5rem;
+    border-radius: 999px;
+    background: #fff;
+    color: #05796B;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-cta:hover {
+    opacity: 0.8;
+}
+
+/* FAQ 섹션 */
+.faq-section {
+    padding: 4rem 0;
+    background: #f9f9f9;
+}
+
+.faq-section h2 {
+    font-size: 1.8rem;
+    color: #05796B;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.faq-section details {
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.faq-section summary {
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+.faq-section summary::after {
+    content: '+';
+    position: absolute;
+    right: 0;
+    top: 0.2rem;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.faq-section details[open] summary::after {
+    content: '–';
+}
+
+.faq-section p {
+    margin-top: 0.5rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* 문의 채널 섹션 */
+.contact-section {
+    padding: 3rem 0;
+    background: #fff;
+}
+
+.contact-section h2 {
+    font-size: 1.8rem;
+    color: #05796B;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.contact-icons {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 1rem;
+}
+
+.contact-icons a img {
+    width: 40px;
+    height: 40px;
+}
+
+/* Footer 섹션 */
+.site-footer {
+    background: #222;
+    color: #fff;
+    padding: 3rem 0;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+}
+
+.footer-logo img {
+    max-width: 150px;
+    height: auto;
+}
+
+.footer-info {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.footer-info p {
+    margin-bottom: 0.5rem;
+}
+
+.footer-info a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 3rem;
+    }
+    
+    .therapy-highlight {
+        min-width: 260px;
+        height: 70px;
+        line-height: 70px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        min-height: 70vh;
+        padding: 2rem 0;
+    }
+    
+    .scroll-hint {
+        display: none;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .therapy-highlight {
+        min-width: 180px;
+        height: 60px;
+        line-height: 60px;
+        font-size: 0.9rem;
+    }
+    
+    .therapists-grid {
+        gap: 2rem;
+    }
+    
+    .therapist-card {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .card-header {
+        min-width: auto;
+        padding: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* 추가된 섹션들 모바일 스타일 */
+    .btn-cta {
+        display: block;
+        width: 90%;
+        margin: 0.5rem auto;
+    }
+    
+    .cta-footer h2 {
+        font-size: clamp(18px, 5vw, 24px);
+        line-height: 1.2;
+    }
+    
+    .faq-section {
+        padding: 2rem 0;
+    }
+    
+    .faq-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .faq-section details {
+        padding: 0.75rem 1rem;
+    }
+    
+    .faq-section summary {
+        font-size: 1rem;
+    }
+    
+    .faq-section p {
+        font-size: 0.95rem;
+    }
+    
+    .contact-icons {
+        gap: 1.5rem;
+    }
+    
+    .contact-icons a img {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+    
+    .footer-logo {
+        margin-bottom: 1rem;
+    }
+    
+    .footer-info {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        min-height: 60vh;
+        padding: 1.5rem 0;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .therapy-highlight {
+        min-width: 160px;
+        height: 55px;
+        line-height: 55px;
+        font-size: 0.85rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+    }
+    
+    .hero-description {
+        font-size: 1rem;
+    }
+}
