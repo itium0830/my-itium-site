@@ -525,8 +525,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="education">학력 정보</label>
-                        <textarea id="education" name="education" placeholder="석사|이화여자대학교 일반대학원|언어병리학과&#10;학사|이화여자대학교|언어병리학과"></textarea>
+                        <label for="education">학력 정보 (대학명 제외)</label>
+                        <textarea id="education" name="education" placeholder="석사|언어병리학과&#10;학사|언어병리학과"></textarea>
+                        <small>💡 형식: 학위|학과 (예: 석사|언어병리학과)</small>
                     </div>
 
                     <div class="form-group">
@@ -679,7 +680,7 @@
                 treatmentMethods: parseTreatmentMethodsFromCheckbox(selectedMethods),
                 certifications: parseCertifications(formData.get('certifications')),
                 experience: parseExperience(formData.get('experience')),
-                education: parseEducation(formData.get('education')),
+                education: parseEducation(formData.get('education')), // 수정된 학력 파싱
                 training: parseTraining(formData.get('training')),
                 reviews: parseReviews(formData.get('reviews'))
             };
@@ -760,7 +761,7 @@
                 });
         }
 
-        // 학력 파싱
+        // 학력 파싱 (수정됨 - 대학명 제외)
         function parseEducation(eduText) {
             if (!eduText) return { master: null, bachelor: null };
             
@@ -769,12 +770,13 @@
             
             lines.forEach(line => {
                 const parts = line.split('|');
-                if (parts.length >= 3) {
+                if (parts.length >= 2) {
                     const level = parts[0].trim();
+                    const major = parts[1].trim();
                     const data = {
-                        degree: `${level} (${parts[2].trim()} 전공)`,
-                        school: parts[1].trim(),
-                        major: parts[2].trim()
+                        degree: `${level} (${major} 전공)`,
+                        school: '', // 대학명 제거
+                        major: major
                     };
                     
                     if (level.includes('석사')) {
@@ -919,7 +921,7 @@
                 setTreatmentMethodsCheckboxes(data.treatmentMethods);
                 document.getElementById('certifications').value = formatCertifications(data.certifications);
                 document.getElementById('experience').value = formatExperience(data.experience);
-                document.getElementById('education').value = formatEducation(data.education);
+                document.getElementById('education').value = formatEducation(data.education); // 수정된 학력 포맷
                 document.getElementById('training').value = (data.training || []).join('\n');
                 document.getElementById('reviews').value = formatReviews(data.reviews);
                 
@@ -966,14 +968,15 @@
             return exp.map(e => `${e.period}|${e.role}|${e.description}`).join('\n');
         }
 
+        // 학력 포맷 (수정됨 - 대학명 제외)
         function formatEducation(edu) {
             if (!edu) return '';
             let result = [];
             if (edu.master) {
-                result.push(`석사|${edu.master.school}|${edu.master.major}`);
+                result.push(`석사|${edu.master.major}`);
             }
             if (edu.bachelor) {
-                result.push(`학사|${edu.bachelor.school}|${edu.bachelor.major}`);
+                result.push(`학사|${edu.bachelor.major}`);
             }
             return result.join('\n');
         }
