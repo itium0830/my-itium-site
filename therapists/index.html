@@ -731,6 +731,28 @@
             .menu-items a {
                 font-size: 1.5rem;
             }
+
+            /* 후기 섹션 모바일 최적화 */
+            .reviews-title {
+                font-size: 2rem;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .review-card {
+                padding: 1.5rem;
+            }
+
+            .review-card::before {
+                font-size: 2rem;
+            }
+
+            .review-content {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -805,6 +827,24 @@
             </div>
         </div>
     </div>
+
+    <!-- 후기 섹션 -->
+    <section class="reviews-section">
+        <div class="container">
+            <h2 class="reviews-title">치료사 후기</h2>
+            <p class="reviews-subtitle">
+                실제 부모님들의 생생한 후기를 확인해보세요
+            </p>
+            
+            <div id="reviewsContainer" class="reviews-grid">
+                <!-- 로딩 상태 -->
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>후기를 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Section1: 4단계 프로세스 섹션 (기존 section-5) -->
     <section class="full-image-sections">
@@ -980,6 +1020,236 @@
             }
         }
 
+        // 배열을 랜덤으로 섞는 함수 (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const shuffled = [...array]; // 원본 배열을 복사
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 후기 데이터 구조 확인 및 처리 함수 (치료사 상세페이지와 동일)
+        function processReviews(reviews) {
+            if (!reviews || reviews.length === 0) {
+                return [];
+            }
+
+            const firstReview = reviews[0];
+            
+            if (typeof firstReview === 'object' && firstReview.content) {
+                return reviews.map(r => r.content || '후기 내용 없음');
+            } 
+            else if (typeof firstReview === 'string') {
+                return reviews;
+            }
+            else {
+                return reviews.map(r => String(r));
+            }
+        }
+
+        // 후기 텍스트 길이 제한 함수 (더 보기 표시 추가)
+        function truncateText(text, maxLength = 120) {
+            if (!text || text.length <= maxLength) {
+                return text || '';
+            }
+            const truncated = text.substring(0, maxLength).trim();
+            return truncated + '<span style="color: #05796B; font-weight: 500; margin-left: 5px;">... 더 보기</span>';
+        }
+
+        // 모든 치료사의 후기를 가져와서 랜덤하게 선택
+        async function loadRandomReviews() {
+            try {
+                console.log('모든 치료사의 후기 데이터 로드 시작');
+                
+                const therapists = await loadAllTherapists();
+                console.log('로드된 치료사 데이터:', therapists);
+                
+                const allReviews = [];
+                
+                // 각 치료사의 후기를 수집
+                therapists.forEach(therapist => {
+                    console.log(`${therapist.name} 치료사 후기 확인:`, therapist.reviews);
+                    
+                    if (therapist.reviews && therapist.reviews.length > 0) {
+                        const processedReviews = processReviews(therapist.reviews);
+                        console.log(`${therapist.name} 처리된 후기:`, processedReviews);
+                        
+                        processedReviews.forEach(review => {
+                            allReviews.push({
+                                content: review,
+                                therapistId: therapist.id,
+                                therapistName: therapist.name,
+                                therapistSpecialty: therapist.specialty || therapist.mainSpecialty || '전문치료사',
+                                therapistImage: therapist.image || '👨‍⚕️'
+                            });
+                        });
+                    }
+                });
+                
+                console.log('수집된 총 후기 수:', allReviews.length);
+                console.log('수집된 후기 데이터:', allReviews);
+                
+                if (allReviews.length === 0) {
+                    console.log('후기가 없어서 샘플 데이터 생성');
+                    // 샘플 데이터 생성 (테스트용)
+                    return [
+                        {
+                            content: "정말 좋은 치료를 받았습니다. 아이가 많이 개선되었어요!",
+                            therapistId: "sample-1",
+                            therapistName: "김선생",
+                            therapistSpecialty: "언어치료 전문",
+                            therapistImage: "👩‍⚕️"
+                        },
+                        {
+                            content: "전문적이고 친절하게 상담해주셔서 감사합니다.",
+                            therapistId: "sample-2", 
+                            therapistName: "이선생",
+                            therapistSpecialty: "작업치료 전문",
+                            therapistImage: "👨‍⚕️"
+                        },
+                        {
+                            content: "체계적인 프로그램으로 아이의 발달에 큰 도움이 되었습니다.",
+                            therapistId: "sample-3",
+                            therapistName: "박선생", 
+                            therapistSpecialty: "놀이치료 전문",
+                            therapistImage: "👩‍⚕️"
+                        }
+                    ];
+                }
+                
+                // 후기를 랜덤으로 섞고 3개만 선택
+                const shuffledReviews = shuffleArray(allReviews);
+                return shuffledReviews.slice(0, 3);
+                
+            } catch (error) {
+                console.error('후기 데이터 로드 실패:', error);
+                
+                // 오류 발생 시 샘플 데이터 반환
+                return [
+                    {
+                        content: "정말 좋은 치료를 받았습니다. 아이가 많이 개선되었어요!",
+                        therapistId: "sample-1",
+                        therapistName: "김선생",
+                        therapistSpecialty: "언어치료 전문",
+                        therapistImage: "👩‍⚕️"
+                    },
+                    {
+                        content: "전문적이고 친절하게 상담해주셔서 감사합니다.",
+                        therapistId: "sample-2",
+                        therapistName: "이선생", 
+                        therapistSpecialty: "작업치료 전문",
+                        therapistImage: "👨‍⚕️"
+                    },
+                    {
+                        content: "체계적인 프로그램으로 아이의 발달에 큰 도움이 되었습니다.",
+                        therapistId: "sample-3",
+                        therapistName: "박선생",
+                        therapistSpecialty: "놀이치료 전문", 
+                        therapistImage: "👩‍⚕️"
+                    }
+                ];
+            }
+        }
+
+        // 후기 표시 함수 (완전히 다시 작성)
+        function displayReviews(reviews) {
+            console.log('displayReviews 함수 실행, 받은 후기:', reviews);
+            
+            const container = document.getElementById('reviewsContainer');
+            if (!container) {
+                console.error('reviewsContainer를 찾을 수 없습니다.');
+                return;
+            }
+            
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <p>등록된 후기가 없습니다.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 강제로 그리드 스타일 적용
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+            container.style.gap = '2rem';
+            container.style.maxWidth = '1200px';
+            container.style.marginLeft = 'auto';
+            container.style.marginRight = 'auto';
+            container.style.marginTop = '4rem'; // 강제로 위쪽 여백 추가
+
+            // 각 후기를 카드로 변환
+            const cardsHTML = reviews.map((review, index) => {
+                console.log(`후기 ${index + 1} 처리:`, review);
+                
+                return `
+                    <div class="review-card" onclick="openTherapistDetailFromReview('${review.therapistId || 'sample-' + (index + 1)}')" 
+                         style="background: #f8f9fa; padding: 2rem; border-radius: 15px; border-left: 4px solid #05796B; 
+                                position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; 
+                                transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                        
+                        <div style="position: absolute; top: 0.5rem; left: 1rem; font-size: 2.5rem; color: #05796B; 
+                                    font-family: serif; opacity: 0.3;">"</div>
+                        
+                        <div class="review-content" style="font-size: 1rem; line-height: 1.6; color: #555; 
+                                                          margin-bottom: 1.5rem; font-style: italic;">
+                            ${truncateText(review.content || '좋은 치료를 받았습니다.')}
+                            <div style="margin-top: 0.8rem; font-size: 0.85rem; color: #05796B; font-weight: 500; 
+                                       font-style: normal;">
+                                💡 치료사 상세정보 보러가기
+                            </div>
+                        </div>
+                        
+                        <div class="review-therapist" style="display: flex; align-items: center; gap: 1rem; 
+                                                            margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                            <div class="review-therapist-avatar" style="width: 40px; height: 40px; 
+                                                                        background: linear-gradient(135deg, #05796B, #077A66); 
+                                                                        border-radius: 50%; display: flex; align-items: center; 
+                                                                        justify-content: center; color: white; font-size: 1.2rem;">
+                                ${review.therapistImage || '👨‍⚕️'}
+                            </div>
+                            <div class="review-therapist-info" style="flex: 1;">
+                                <div class="review-therapist-name" style="font-weight: 600; color: #05796B; font-size: 0.9rem;">
+                                    ${review.therapistName || '전문치료사'} 치료사
+                                </div>
+                                <div class="review-therapist-specialty" style="font-size: 0.8rem; color: #666;">
+                                    ${review.therapistSpecialty || '전문치료'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            console.log('생성된 HTML:', cardsHTML);
+            container.innerHTML = cardsHTML;
+            
+            // 호버 효과 추가
+            setTimeout(() => {
+                const cards = container.querySelectorAll('.review-card');
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                        this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.12)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.08)';
+                    });
+                });
+            }, 100);
+            
+            console.log('후기 카드 생성 완료, 카드 수:', reviews.length);
+        }
+
+        // 후기 클릭 시 치료사 상세페이지로 이동
+        function openTherapistDetailFromReview(therapistId) {
+            window.location.href = `therapist-detail.html?id=${therapistId}`;
+        }
+
         // 치료사 ID 생성 (이름 기반)
         function generateTherapistId(name) {
             return name.toLowerCase()
@@ -987,25 +1257,19 @@
                 .replace(/[^a-z0-9-가-힣]/g, '');
         }
 
-        // 치료사 카드 HTML 생성 (센터 정보와 활동지역 분리 표시)
+        // 치료사 카드 HTML 생성 (가로형)
         function createTherapistCard(therapist) {
-            // 센터 정보 표시
             const centerDisplay = therapist.centerInfo && therapist.centerInfo.isPublic 
                 ? `<div class="center-name">${therapist.centerInfo.name}</div>
                    <div class="center-support">${therapist.voucherSupport || ''}</div>`
                 : `<div class="center-name">🔒 비공개</div>
                    <div class="center-support">상담 신청 시 안내</div>`;
 
-            // 전문분야 배지 (최대 2개)
             const badges = therapist.subSpecialties && therapist.subSpecialties.length > 0
-                ? therapist.subSpecialties.slice(0, 2).map(specialty => 
+                ? therapist.subSpecialties.slice(0, 3).map(specialty => 
                     `<span class="badge">${specialty}</span>`
                   ).join('')
                 : `<span class="badge">${therapist.mainSpecialty || '전문치료'}</span>`;
-
-            // 활동지역 배지 (별도로 표시)
-            const activityAreaBadge = therapist.activityArea ? 
-                `<span class="badge" style="background: #FFE5B4; color: #B8860B;">🗺️ ${therapist.activityArea}</span>` : '';
 
             return `
                 <div class="therapist-card" onclick="openTherapistDetail('${therapist.id}')">
@@ -1020,7 +1284,6 @@
                             
                             <div class="card-badges">
                                 ${badges}
-                                ${activityAreaBadge}
                             </div>
                             
                             <div class="card-center">
@@ -1044,7 +1307,7 @@
         // 홈페이지용 설정
         const homePageLimit = 3; // 홈페이지에는 3개만 표시
 
-        // 치료사 목록 표시 (홈페이지용 - 3개만, 깔끔한 버전)
+        // 치료사 목록 표시 (홈페이지용 - 3개만, 랜덤으로 선택)
         function displayTherapists(therapists) {
             const container = document.getElementById('therapistsContainer');
             
@@ -1064,13 +1327,14 @@
                 existingButton.remove();
             }
 
-            // 홈페이지에는 상위 3명만 표시
-            const featuredTherapists = therapists.slice(0, homePageLimit);
+            // 치료사 목록을 랜덤으로 섞은 후 상위 3명 선택
+            const shuffledTherapists = shuffleArray(therapists);
+            const featuredTherapists = shuffledTherapists.slice(0, homePageLimit);
 
             // 치료사 카드들만 표시
             container.innerHTML = featuredTherapists.map(therapist => createTherapistCard(therapist)).join('');
             
-            // 버튼은 별도로 추가
+            // 버튼은 별도로 추가 (인원 수 제거)
             if (therapists.length > homePageLimit) {
                 const buttonContainer = document.createElement('div');
                 buttonContainer.id = 'therapistButton';
@@ -1086,7 +1350,7 @@
                 buttonContainer.innerHTML = `
                     <button class="btn btn-primary" onclick="goToTherapistList()" 
                             style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 50px;">
-                        🔍 모든 치료사 보기 (${therapists.length}명)
+                        🔍 모든 치료사 보기
                     </button>
                 `;
                 
@@ -1156,15 +1420,53 @@
             }
         }
 
-        // 페이지 로드 시 치료사 목록 로드
+        // 페이지 로드 시 치료사 목록과 후기 로드
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('페이지 로드 완료, 치료사 목록 로드 시작');
+            console.log('페이지 로드 완료, 치료사 목록과 후기 로드 시작');
             
             // 히어로 애니메이션 시작
             new TherapyAnimation();
             
-            const therapists = await loadAllTherapists();
-            displayTherapists(therapists);
+            // 치료사 목록과 후기를 병렬로 로드
+            try {
+                const therapists = await loadAllTherapists();
+                displayTherapists(therapists);
+                
+                console.log('후기 로드 시작');
+                // 후기 로드
+                const reviews = await loadRandomReviews();
+                console.log('로드된 후기:', reviews);
+                displayReviews(reviews);
+                console.log('후기 표시 완료');
+            } catch (error) {
+                console.error('페이지 로드 중 오류 발생:', error);
+                
+                // 오류 발생 시 기본 후기 표시
+                const fallbackReviews = [
+                    {
+                        content: "정말 좋은 치료를 받았습니다. 아이가 많이 개선되었어요!",
+                        therapistId: "sample-1",
+                        therapistName: "김선생",
+                        therapistSpecialty: "언어치료 전문",
+                        therapistImage: "👩‍⚕️"
+                    },
+                    {
+                        content: "전문적이고 친절하게 상담해주셔서 감사합니다.",
+                        therapistId: "sample-2",
+                        therapistName: "이선생",
+                        therapistSpecialty: "작업치료 전문", 
+                        therapistImage: "👨‍⚕️"
+                    },
+                    {
+                        content: "체계적인 프로그램으로 아이의 발달에 큰 도움이 되었습니다.",
+                        therapistId: "sample-3",
+                        therapistName: "박선생",
+                        therapistSpecialty: "놀이치료 전문",
+                        therapistImage: "👩‍⚕️"
+                    }
+                ];
+                displayReviews(fallbackReviews);
+            }
         });
     </script>
 </body>

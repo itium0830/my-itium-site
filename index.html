@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head>    
   <!-- Meta Pixel (noscript) -->
   <noscript>
     <img height="1" width="1" style="display:none"
@@ -26,13 +26,6 @@
   gtag('js', new Date());
   gtag('config', 'G-6RKPWNBB69');
   </script>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>아이티움 – 발달 전문가 매칭</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-
   <!-- Clarity 코드 -->
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -46,169 +39,723 @@
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
 
-  <style>
-    /* 기존 스타일 유지 - 햄버거 메뉴 스타일만 교체 */
-    .global-nav {
-      background: white;
-      padding: 15px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이티움 - 아이 발달 전문 치료사 매칭 서비스</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK 8버전 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .nav-container {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
 
-    /* 햄버거 버튼 */
-    .hamburger-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 10px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      position: relative;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    .hamburger-btn:hover {
-      background: rgba(0, 0, 0, 0.1);
-    }
+        /* 햄버거 네비게이션 */
+        .global-nav {
+            background: white;
+            padding: 15px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-    .hamburger-btn span {
-      display: block;
-      width: 25px;
-      height: 3px;
-      background: black;
-      margin: 3px 0;
-      transition: all 0.3s ease;
-      border-radius: 2px;
-    }
+        .nav-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .hamburger-btn.active span:nth-child(1) {
-      transform: rotate(45deg) translate(6px, 6px);
-    }
+        /* 햄버거 버튼 */
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .hamburger-btn.active span:nth-child(2) {
-      opacity: 0;
-    }
+        .hamburger-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
 
-    .hamburger-btn.active span:nth-child(3) {
-      transform: rotate(-45deg) translate(7px, -6px);
-    }
+        .hamburger-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: black;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
 
-    /* 메뉴 오버레이 */
-    .menu-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background: #05796B;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transform: translateY(-100%);
-      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      z-index: 999;
-    }
+        .hamburger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
 
-    .menu-overlay.active {
-      transform: translateY(0);
-    }
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
 
-    .menu-items {
-      list-style: none;
-      text-align: center;
-      padding: 0;
-      margin: 0;
-    }
+        .hamburger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
 
-    .menu-items li {
-      margin: 30px 0;
-      opacity: 0;
-      transform: translateY(50px);
-      transition: all 0.6s ease;
-    }
+        /* 메뉴 오버레이 */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #05796B;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-100%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 999;
+        }
 
-    .menu-overlay.active .menu-items li {
-      opacity: 1;
-      transform: translateY(0);
-    }
+        .menu-overlay.active {
+            transform: translateY(0);
+        }
 
-    .menu-overlay.active .menu-items li:nth-child(1) {
-      transition-delay: 0.1s;
-    }
+        .menu-items {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
 
-    .menu-overlay.active .menu-items li:nth-child(2) {
-      transition-delay: 0.2s;
-    }
+        .menu-items li {
+            margin: 30px 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
 
-    .menu-overlay.active .menu-items li:nth-child(3) {
-      transition-delay: 0.3s;
-    }
+        .menu-overlay.active .menu-items li {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    .menu-items a {
-      color: white;
-      text-decoration: none;
-      font-size: 2rem;
-      font-weight: 600;
-      padding: 15px 30px;
-      border-radius: 15px;
-      transition: all 0.3s ease;
-      display: inline-block;
-      position: relative;
-      overflow: hidden;
-    }
+        .menu-overlay.active .menu-items li:nth-child(1) {
+            transition-delay: 0.1s;
+        }
 
-    .menu-items a::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      transition: left 0.3s ease;
-    }
+        .menu-overlay.active .menu-items li:nth-child(2) {
+            transition-delay: 0.2s;
+        }
 
-    .menu-items a:hover::before {
-      left: 0;
-    }
+        .menu-overlay.active .menu-items li:nth-child(3) {
+            transition-delay: 0.3s;
+        }
 
-    .menu-items a:hover {
-      transform: translateY(-3px);
-      text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
+        .menu-items a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: 600;
+            padding: 15px 30px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* 메인 콘텐츠에 상단 여백 추가 */
-    .section-1 {
-      margin-top: 80px;
-    }
+        .menu-items a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.3s ease;
+        }
 
-    /* 반응형 디자인 */
-    @media (max-width: 768px) {
-      .menu-items a {
-        font-size: 1.5rem;
-      }
-    }
-  </style>  
+        .menu-items a:hover::before {
+            left: 0;
+        }
+
+        .menu-items a:hover {
+            transform: translateY(-3px);
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 히어로 섹션 */
+        .header {
+            background: linear-gradient(135deg, #05796B 0%, #0A9E8A 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 80px; /* 네비게이션 공간 확보 */
+        }
+
+        .hero-container {
+            text-align: center;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            color: white;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            line-height: 1.3;
+        }
+
+        .therapy-highlight {
+            display: inline-block;
+            background: #2c2c2c;
+            color: #ffd700;
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            margin: 0 0.5rem;
+            position: relative;
+            overflow: hidden;
+            min-width: 280px;
+            height: 80px;
+            line-height: 80px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .therapy-word {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .therapy-word.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .therapy-word.prev {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 2rem;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 3rem;
+            padding: 1rem 2.5rem;
+            background: #ffffff;
+            color: #05796B;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            border: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+            background: #f8f8f8;
+        }
+
+        /* 메인 섹션 */
+        .main-section {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #05796B;
+            margin-bottom: 3rem;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 치료사 목록 */
+        .therapists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            max-width: 1000px; /* 3개일 때 최적 너비 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 홈페이지용 3개 카드 최적화 */
+        @media (min-width: 992px) {
+            .therapists-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .therapists-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .therapists-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .therapist-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .therapist-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #05796B, #077A66);
+            color: white;
+            padding: 1.5rem; /* 패딩 줄임 */
+            text-align: center;
+            position: relative;
+            min-height: 180px; /* 최소 높이 설정 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-emoji {
+            font-size: 2.5rem; /* 크기 줄임 */
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .card-name {
+            font-size: 1.3rem; /* 크기 줄임 */
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            line-height: 1.2;
+        }
+
+        .card-specialty {
+            font-size: 0.9rem; /* 크기 줄임 */
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        .card-body {
+            padding: 1.2rem; /* 패딩 줄임 */
+            flex: 1; /* 남은 공간 채우기 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-intro {
+            font-size: 0.9rem; /* 크기 줄임 */
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 2줄 제한 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            background: #E8F5F3;
+            color: #05796B;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .card-center {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .center-name {
+            font-weight: 600;
+            color: #05796B;
+            margin-bottom: 0.3rem;
+        }
+
+        .center-support {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #05796B;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #046A5C;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #05796B;
+            border: 2px solid #05796B;
+        }
+
+        .btn-secondary:hover {
+            background: #05796B;
+            color: white;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #05796B;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 푸터 */
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        /* 버튼 공통 */
+        .btn-cta { 
+            display: inline-block; 
+            background: #fff; 
+            color: #05796B; 
+            text-decoration: none; 
+            font-weight: 600; 
+            transition: opacity 0.2s; 
+            padding: 1em 2.5em; 
+            border-radius: 999px; 
+        }
+        .btn-cta:hover { opacity: 0.8; }
+
+        /* Section1~3: Full-image sections */
+        .full-image-sections { 
+            padding: 4em 0; 
+            text-align: center; 
+        }
+        .full-image-sections .full-img { 
+            width: 100%; 
+            margin: 2em auto; 
+            border-radius: 0; 
+        }
+
+        /* CTA Footer (7번 섹션) */
+        .cta-footer { 
+            background: #05796B; 
+            color: #fff; 
+            text-align: center; 
+            padding: 4em 0; 
+        }
+        .cta-footer h2 { 
+            font-size: 2em; 
+            line-height: 1.3; 
+            margin-bottom: 1.5em; 
+        }
+        .cta-footer h2 span { 
+            color: #FFD99B; 
+        }
+
+        /* FAQ 섹션 */
+        .faq-section { 
+            padding: 4em 0; 
+            background: #f9f9f9; 
+        }
+        .faq-section h2 { 
+            font-size: 1.8em; 
+            color: #05796B; 
+            margin-bottom: 1em; 
+        }
+        .faq-section details { 
+            background: #fff; 
+            border-radius: 8px; 
+            margin-bottom: 1em; 
+            padding: 1em 1.5em; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
+        }
+        .faq-section summary { 
+            font-size: 1.1em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            position: relative; 
+            padding-right: 1.5em; 
+        }
+        .faq-section summary::after { 
+            content: '+'; 
+            position: absolute; 
+            right: 0; 
+            top: 0.2em; 
+            font-size: 1.2em; 
+            transition: transform 0.2s; 
+        }
+        .faq-section details[open] summary::after { 
+            content: '–'; 
+        }
+        .faq-section p { 
+            margin-top: 0.5em; 
+            line-height: 1.6; 
+            color: #333; 
+        }
+
+        /* 문의 채널 섹션 */
+        .contact-section { 
+            padding: 3em 0; 
+            background: #fff; 
+        }
+        .contact-section h2 { 
+            font-size: 1.8em; 
+            color: #05796B; 
+            text-align: center; 
+            margin-bottom: 2em; 
+        }
+        .contact-icons { 
+            display: flex; 
+            justify-content: center; 
+            gap: 3em; 
+            margin-top: 1em; 
+        }
+        .contact-icons a img { 
+            width: 40px; 
+            height: 40px; 
+        }
+
+        /* Footer 섹션 */
+        .site-footer { 
+            background: #222; 
+            color: #fff; 
+            padding: 3em 0; 
+        }
+        .footer-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            align-items: flex-start; 
+            gap: 2em; 
+            align-items: center; 
+        }
+        .footer-logo img { 
+            max-width: 150px; 
+            height: auto; 
+        }
+        .footer-info { 
+            flex: 1; 
+            font-size: 0.9em; 
+        }
+        .footer-info p { 
+            margin-bottom: 0.5em; 
+        }
+        .footer-info a { 
+            color: #fff; 
+            text-decoration: underline; 
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .therapists-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .btn-cta { 
+                display: block; 
+                width: 90%; 
+                margin: 0.5em auto; 
+            }
+            .cta-footer h2 { 
+                font-size: clamp(18px,5vw,24px); 
+                line-height: 1.2; 
+            }
+            .faq-section { 
+                padding: 2em 0; 
+            }
+            .faq-section h2 { 
+                font-size: 1.5em; 
+            }
+            .faq-section details { 
+                padding: 0.75em 1em; 
+            }
+            .faq-section summary { 
+                font-size: 1em; 
+            }
+            .faq-section p { 
+                font-size: 0.95em; 
+            }
+            .contact-icons { 
+                gap: 1.5em; 
+            }
+            .contact-icons a img { 
+                width: 32px; 
+                height: 32px; 
+            }
+            .footer-container { 
+                flex-direction: column; 
+                text-align: center; 
+            }
+            .footer-logo { 
+                margin-bottom: 1em; 
+            }
+
+            .menu-items a {
+                font-size: 1.5rem;
+            }
+
+            /* 후기 섹션 모바일 최적화 */
+            .reviews-title {
+                font-size: 2rem;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .review-card {
+                padding: 1.5rem;
+            }
+
+            .review-card::before {
+                font-size: 2rem;
+            }
+
+            .review-content {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
   <!-- Google Tag Manager (noscript) -->
   <noscript>
@@ -217,7 +764,7 @@
   </noscript>
   <!-- End Google Tag Manager (noscript) -->
 
-  <!-- 햄버거 네비게이션 (기존 global-nav 교체) -->
+  <!-- 햄버거 네비게이션 -->
   <nav class="global-nav">
     <div class="nav-container">
       <button class="hamburger-btn" id="hamburgerBtn">
@@ -228,172 +775,699 @@
     </div>
   </nav>
 
-  <!-- 메뉴 오버레이 (새로 추가) -->
+  <!-- 메뉴 오버레이 -->
   <div class="menu-overlay" id="menuOverlay">
     <ul class="menu-items">
       <li><a href="index.html">🏠 보호자 전용</a></li>
       <li><a href="therapist1/index.html">👩🏻‍⚕️ 치료사 전용</a></li>
     </ul>
   </div>
-
-  <!-- 1번 섹션: Hero 이미지 위에 버튼 오버레이 -->
-  <section class="section-1">
-    <div class="hero-wrapper">
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-1-mobile.png">
-        <img src="images/section-1.png"
-             alt="아이 상황에 딱 맞는 발달 전문가를 아이티움에서 만나보세요"
-             class="full-img">
-      </picture>
-      <a href="survey/index.html"
-         class="btn-primary section1-btn"
-         target="_slef" rel="noopener">
-        딱 맞는 치료사찾기 >
-      </a>
+    
+    <div class="header">
+        <div class="hero-container">
+            <h1 class="hero-title">
+                우리 아이를 도와줄<br>
+                <span class="therapy-highlight">
+                    <span class="therapy-word active">언어치료사</span>
+                    <span class="therapy-word">작업치료사</span>
+                    <span class="therapy-word">감각치료사</span>
+                    <span class="therapy-word">행동치료사</span>
+                    <span class="therapy-word">놀이치료사</span>
+                    <span class="therapy-word">미술치료사</span>
+                    <span class="therapy-word">음악치료사</span>
+                    <span class="therapy-word">심리상담사</span>
+                </span>
+                가
+                <br>기다리고 있어요!
+            </h1>
+            
+            <p class="hero-subtitle">
+                <b>발달이 느린 아이들</b>의
+                <br>건강한 성장을 위한 전문 치료 서비스
+            </p>
+            
+            <button class="cta-button" onclick="requestConsultation()">전문가 매칭요청</button>
+        </div>
+        
     </div>
-  </section>
 
-  <!-- Sections 2 to 6: full-image sections with <picture> for mobile -->
-  <section class="full-image-sections">
-    <div class="container">
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-2-mobile.png">
-        <img src="images/section-2.png" alt="문제 인식 섹션" class="full-img">
-      </picture>
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-3-mobile.png">
-        <img src="images/section-3.png" alt="매칭 방식 섹션" class="full-img">
-      </picture>
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-4-mobile.png">
-        <img src="images/section-4.png" alt="치료사 매칭 카드 섹션" class="full-img">
-      </picture>
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-5-mobile.png">
-        <img src="images/section-5.png" alt="4단계 프로세스 섹션" class="full-img">
-      </picture>
-      <picture>
-        <source media="(max-width: 768px)" srcset="images/section-6-mobile.png">
-        <img src="images/section-6.png" alt="후기 카드 섹션" class="full-img">
-      </picture>
+    <div class="main-section">
+        <div class="container">
+            <h2 class="section-title">아이티움 치료사 정보</h2>
+            <p class="section-subtitle">
+                검증된 전문 치료사들이 우리 아이들의 건강한 성장을 위해 최선을 다하고 있습니다
+            </p>
+            
+            <div id="therapistsContainer" class="therapists-grid">
+                <!-- 로딩 상태 -->
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Firebase에서 치료사 정보를 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </section>
 
-  <!-- 마지막 7번 섹션: CTA Footer -->
-  <section class="cta-footer">
-    <div class="container">
-      <h2>
-        아이티움의 <span>맞춤 전문가</span>를 통해<br>
-        우리 아이의 <span>변화할 미래</span>를 만나보세요.
-      </h2>
-      <a href="survey/index.html"
-         class="btn-primary btn-cta"
-         target="_slef" rel="noopener">
-        회원가입하기 &gt;
-      </a>
-    </div>
-  </section>
+    <!-- 후기 섹션 -->
+    <section class="reviews-section">
+        <div class="container">
+            <h2 class="reviews-title">치료사 후기</h2>
+            <p class="reviews-subtitle">
+                실제 부모님들의 생생한 후기를 확인해보세요
+            </p>
+            
+            <div id="reviewsContainer" class="reviews-grid">
+                <!-- 로딩 상태 -->
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>후기를 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <!-- FAQ 섹션 -->
-  <section class="faq-section">
-    <div class="container">
-      <h2>자주 묻는 질문</h2>
-      <details>
-        <summary>아이티움이 무엇인가요?</summary>
-        <p>아이티움은 아이의 발달 상황에 딱 맞는 전문가를 매칭해 드리는 서비스입니다.</p>
-      </details>
-      <details>
-        <summary>비대면 상담만 가능한가요?</summary>
-        <p>
-          - 비대면(온라인) 채팅 상담은 물론,
-          발달센터 방문상담 또는 홈티(집 방문) 상담도 가능합니다.
-          <br>- 상담은 가볍게 문의만 받고 끝나는 경우도 있고,
-          장기 치료·교육으로 발전하는 경우도 있습니다.
-        </p>
-      </details>
-      <details>
-        <summary>매칭은 어떻게 이뤄지는 건가요?</summary>
-        <p>
-          - [치료사 매칭받기] 버튼을 눌러 매칭 정보를 입력해 주세요.
-          <br>- 작성해주신 정보를 바탕으로 최적 전문가 리스트를 전달해 드립니다.
-          <br>- 원하시는 전문가를 선택 후 상담 일정을 잡아 주세요.
-          <br>- 상담 후 추가 안내를 아이티움에서 드립니다.
-        </p>
-      </details>
-    </div>
-  </section>
+    <!-- Section1: 4단계 프로세스 섹션 (기존 section-5) -->
+    <section class="full-image-sections">
+        <div class="container">
+            <picture>
+                <source media="(max-width: 768px)" srcset="https://itium0830.github.io/my-itium-site/images/section-5-mobile.png">
+                <img src="https://itium0830.github.io/my-itium-site/images/section-5.png" alt="4단계 프로세스 섹션" class="full-img">
+            </picture>
+        </div>
+    </section>
 
-  <!-- 문의 채널 섹션 -->
-  <section class="contact-section">
-    <div class="container">
-      <h2>문의 채널</h2>
-      <div class="contact-icons">
-        <a href="http://pf.kakao.com/_nxibZn" target="_blank" rel="noopener">
-          <img src="images/kakao-icon.png" alt="카카오톡 문의">
-        </a>
-        <a href="https://www.instagram.com/i_tium_official" target="_blank" rel="noopener">
-          <img src="images/instagram-icon.png" alt="인스타그램 문의">
-        </a>
-        <a href="mailto:team@i-tium.com">
-          <img src="images/mail-icon.png" alt="이메일 문의">
-        </a>
-      </div>
-    </div>
-  </section>
+    <!-- Section2: 후기 카드 섹션 (기존 section-6) -->
+    <section class="full-image-sections">
+        <div class="container">
+            <picture>
+                <source media="(max-width: 768px)" srcset="https://itium0830.github.io/my-itium-site/images/section-6-mobile.png">
+                <img src="https://itium0830.github.io/my-itium-site/images/section-6.png" alt="후기 카드 섹션" class="full-img">
+            </picture>
+        </div>
+    </section>
 
-  <!-- Footer 섹션 -->
-  <footer class="site-footer">
-    <div class="container footer-container">
-      <div class="footer-logo">
-        <img src="images/itium-logo-footer.png" alt="아이티움 로고">
-      </div>
-      <div class="footer-info">
-        <p>상호명: 주식회사 페어치도어</p>
-        <p>사업자번호: 513-81-92776</p>
-        <p>주소: 울산 북구 농공단지1길 32-8 202호</p>
-        <p><a href="https://moneypin.biz/bizno/detail/5138192776" target="_blank" rel="noopener">사업자정보확인하기 &gt;</a></p>
-        <p><a href="https://i-tium.notion.site/1d63aaf2935981eca066d9d3530c32e7" target="_blank" rel="noopener">개인정보처리방침</a></p>
-      </div>
-    </div>
-  </footer>
+    <!-- Section3: CTA Footer (기존 section-7) -->
+    <section class="cta-footer">
+        <div class="container">
+            <h2>
+                아이티움의 <span>맞춤 전문가</span>를 통해<br>
+                우리 아이의 <span>변화할 미래</span>를 만나보세요.
+            </h2>
+            <a href="https://itium0830.github.io/my-itium-site/survey" class="btn-cta" target="_blank" rel="noopener">
+                회원가입하기 &gt;
+            </a>
+        </div>
+    </section>
 
-  <!-- 햄버거 메뉴 JavaScript (새로 추가) -->
-  <script>
-    // 햄버거 메뉴 토글 기능
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const menuOverlay = document.getElementById('menuOverlay');
-    const body = document.body;
+    <!-- FAQ 섹션 -->
+    <section class="faq-section">
+        <div class="container">
+            <h2>자주 묻는 질문</h2>
+            <details>
+                <summary>아이티움이 무엇인가요?</summary>
+                <p>아이티움은 아이의 발달 상황에 딱 맞는 전문가를 매칭해 드리는 서비스입니다.</p>
+            </details>
+            <details>
+                <summary>비대면 상담만 가능한가요?</summary>
+                <p>
+                    - 비대면(온라인) 채팅 상담은 물론,
+                    발달센터 방문상담 또는 홈티(집 방문) 상담도 가능합니다.
+                    <br>- 상담은 가볍게 문의만 받고 끝나는 경우도 있고,
+                    장기 치료·교육으로 발전하는 경우도 있습니다.
+                </p>
+            </details>
+            <details>
+                <summary>매칭은 어떻게 이뤄지는 건가요?</summary>
+                <p>
+                    - [치료사 매칭받기] 버튼을 눌러 매칭 정보를 입력해 주세요.
+                    <br>- 작성해주신 정보를 바탕으로 최적 전문가 리스트를 전달해 드립니다.
+                    <br>- 원하시는 전문가를 선택 후 상담 일정을 잡아 주세요.
+                    <br>- 상담 후 추가 안내를 아이티움에서 드립니다.
+                </p>
+            </details>
+        </div>
+    </section>
 
-    hamburgerBtn.addEventListener('click', function() {
-      hamburgerBtn.classList.toggle('active');
-      menuOverlay.classList.toggle('active');
-      
-      // 메뉴가 열릴 때 스크롤 방지
-      if (menuOverlay.classList.contains('active')) {
-        body.style.overflow = 'hidden';
-      } else {
-        body.style.overflow = 'auto';
-      }
-    });
+    <!-- 문의 채널 섹션 -->
+    <section class="contact-section">
+        <div class="container">
+            <h2>문의 채널</h2>
+            <div class="contact-icons">
+                <a href="http://pf.kakao.com/_nxibZn" target="_blank" rel="noopener">
+                    <img src="https://itium0830.github.io/my-itium-site/images/kakao-icon.png" alt="카카오톡 문의">
+                </a>
+                <a href="https://www.instagram.com/i_tium_official" target="_blank" rel="noopener">
+                    <img src="https://itium0830.github.io/my-itium-site/images/instagram-icon.png" alt="인스타그램 문의">
+                </a>
+                <a href="mailto:team@i-tium.com">
+                    <img src="https://itium0830.github.io/my-itium-site/images/mail-icon.png" alt="이메일 문의">
+                </a>
+            </div>
+        </div>
+    </section>
 
-    // 메뉴 링크 클릭 시 메뉴 닫기
-    const menuLinks = document.querySelectorAll('.menu-items a');
-    menuLinks.forEach(link => {
-      link.addEventListener('click', function() {
-        hamburgerBtn.classList.remove('active');
-        menuOverlay.classList.remove('active');
-        body.style.overflow = 'auto';
-      });
-    });
+    <!-- Footer 섹션 -->
+    <footer class="site-footer">
+        <div class="container footer-container">
+            <div class="footer-logo">
+                <img src="https://itium0830.github.io/my-itium-site/images/itium-logo-footer.png" alt="아이티움 로고">
+            </div>
+            <div class="footer-info">
+                <p>상호명: 주식회사 페어치도어</p>
+                <p>사업자번호: 513-81-92776</p>
+                <p>주소: 울산 북구 농공단지1길 32-8 202호</p>
+                <p><a href="https://moneypin.biz/bizno/detail/5138192776" target="_blank" rel="noopener">사업자정보확인하기 &gt;</a></p>
+                <p><a href="https://i-tium.notion.site/1d63aaf2935981eca066d9d3530c32e7" target="_blank" rel="noopener">개인정보처리방침</a></p>
+            </div>
+        </div>
+    </footer>
 
-    // ESC 키로 메뉴 닫기
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
-        hamburgerBtn.classList.remove('active');
-        menuOverlay.classList.remove('active');
-        body.style.overflow = 'auto';
-      }
-    });
-  </script>
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAHKElkUtTD36_UkeNHm6fuldwcNXL0hM",
+            authDomain: "itium-therapists.firebaseapp.com",
+            projectId: "itium-therapists",
+            storageBucket: "itium-therapists.firebasestorage.app",
+            messagingSenderId: "524452920161",
+            appId: "1:524452920161:web:3a41c7cd9647bbe6e4a320",
+            measurementId: "G-2PP3ZBKY82"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 햄버거 메뉴 토글 기능
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const body = document.body;
+
+        hamburgerBtn.addEventListener('click', function() {
+            hamburgerBtn.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            
+            // 메뉴가 열릴 때 스크롤 방지
+            if (menuOverlay.classList.contains('active')) {
+                body.style.overflow = 'hidden';
+            } else {
+                body.style.overflow = 'auto';
+            }
+        });
+
+        // 메뉴 링크 클릭 시 메뉴 닫기
+        const menuLinks = document.querySelectorAll('.menu-items a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                hamburgerBtn.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                body.style.overflow = 'auto';
+            });
+        });
+
+        // ESC 키로 메뉴 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+                hamburgerBtn.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                body.style.overflow = 'auto';
+            }
+        });
+
+        // Firebase에서 모든 치료사 데이터 가져오기
+        async function loadAllTherapists() {
+            try {
+                console.log('Firebase에서 치료사 데이터 로드 시작');
+                
+                const querySnapshot = await db.collection('therapists').get();
+                const therapists = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    therapists.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                console.log('로드된 치료사 수:', therapists.length);
+                console.log('치료사 데이터:', therapists);
+                
+                return therapists;
+            } catch (error) {
+                console.error('Firebase에서 치료사 데이터 로드 실패:', error);
+                return [];
+            }
+        }
+
+        // 배열을 랜덤으로 섞는 함수 (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const shuffled = [...array]; // 원본 배열을 복사
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 후기 데이터 구조 확인 및 처리 함수 (치료사 상세페이지와 동일)
+        function processReviews(reviews) {
+            if (!reviews || reviews.length === 0) {
+                return [];
+            }
+
+            const firstReview = reviews[0];
+            
+            if (typeof firstReview === 'object' && firstReview.content) {
+                return reviews.map(r => r.content || '후기 내용 없음');
+            } 
+            else if (typeof firstReview === 'string') {
+                return reviews;
+            }
+            else {
+                return reviews.map(r => String(r));
+            }
+        }
+
+        // 후기 텍스트 길이 제한 함수 (더 보기 표시 추가)
+        function truncateText(text, maxLength = 120) {
+            if (!text || text.length <= maxLength) {
+                return text || '';
+            }
+            const truncated = text.substring(0, maxLength).trim();
+            return truncated + '<span style="color: #05796B; font-weight: 500; margin-left: 5px;">... 더 보기</span>';
+        }
+
+        // 모든 치료사의 후기를 가져와서 랜덤하게 선택
+        async function loadRandomReviews() {
+            try {
+                console.log('모든 치료사의 후기 데이터 로드 시작');
+                
+                const therapists = await loadAllTherapists();
+                console.log('로드된 치료사 데이터:', therapists);
+                
+                const allReviews = [];
+                
+                // 각 치료사의 후기를 수집
+                therapists.forEach(therapist => {
+                    console.log(`${therapist.name} 치료사 후기 확인:`, therapist.reviews);
+                    
+                    if (therapist.reviews && therapist.reviews.length > 0) {
+                        const processedReviews = processReviews(therapist.reviews);
+                        console.log(`${therapist.name} 처리된 후기:`, processedReviews);
+                        
+                        processedReviews.forEach(review => {
+                            allReviews.push({
+                                content: review,
+                                therapistId: therapist.id,
+                                therapistName: therapist.name,
+                                therapistSpecialty: therapist.specialty || therapist.mainSpecialty || '전문치료사',
+                                therapistImage: therapist.image || '👨‍⚕️'
+                            });
+                        });
+                    }
+                });
+                
+                console.log('수집된 총 후기 수:', allReviews.length);
+                console.log('수집된 후기 데이터:', allReviews);
+                
+                if (allReviews.length === 0) {
+                    console.log('후기가 없어서 샘플 데이터 생성');
+                    // 샘플 데이터 생성 (테스트용)
+                    return [
+                        {
+                            content: "정말 좋은 치료를 받았습니다. 아이가 많이 개선되었어요!",
+                            therapistId: "sample-1",
+                            therapistName: "김선생",
+                            therapistSpecialty: "언어치료 전문",
+                            therapistImage: "👩‍⚕️"
+                        },
+                        {
+                            content: "전문적이고 친절하게 상담해주셔서 감사합니다.",
+                            therapistId: "sample-2", 
+                            therapistName: "이선생",
+                            therapistSpecialty: "작업치료 전문",
+                            therapistImage: "👨‍⚕️"
+                        },
+                        {
+                            content: "체계적인 프로그램으로 아이의 발달에 큰 도움이 되었습니다.",
+                            therapistId: "sample-3",
+                            therapistName: "박선생", 
+                            therapistSpecialty: "놀이치료 전문",
+                            therapistImage: "👩‍⚕️"
+                        }
+                    ];
+                }
+                
+                // 후기를 랜덤으로 섞고 3개만 선택
+                const shuffledReviews = shuffleArray(allReviews);
+                return shuffledReviews.slice(0, 3);
+                
+            } catch (error) {
+                console.error('후기 데이터 로드 실패:', error);
+                
+                // 오류 발생 시 샘플 데이터 반환
+                return [
+                    {
+                        content: "정말 좋은 치료를 받았습니다. 아이가 많이 개선되었어요!",
+                        therapistId: "sample-1",
+                        therapistName: "김선생",
+                        therapistSpecialty: "언어치료 전문",
+                        therapistImage: "👩‍⚕️"
+                    },
+                    {
+                        content: "전문적이고 친절하게 상담해주셔서 감사합니다.",
+                        therapistId: "sample-2",
+                        therapistName: "이선생", 
+                        therapistSpecialty: "작업치료 전문",
+                        therapistImage: "👨‍⚕️"
+                    },
+                    {
+                        content: "체계적인 프로그램으로 아이의 발달에 큰 도움이 되었습니다.",
+                        therapistId: "sample-3",
+                        therapistName: "박선생",
+                        therapistSpecialty: "놀이치료 전문", 
+                        therapistImage: "👩‍⚕️"
+                    }
+                ];
+            }
+        }
+
+        // 후기 표시 함수 (완전히 다시 작성)
+        function displayReviews(reviews) {
+            console.log('displayReviews 함수 실행, 받은 후기:', reviews);
+            
+            const container = document.getElementById('reviewsContainer');
+            if (!container) {
+                console.error('reviewsContainer를 찾을 수 없습니다.');
+                return;
+            }
+            
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <p>등록된 후기가 없습니다.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 강제로 그리드 스타일 적용
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+            container.style.gap = '2rem';
+            container.style.maxWidth = '1200px';
+            container.style.marginLeft = 'auto';
+            container.style.marginRight = 'auto';
+            container.style.marginTop = '4rem'; // 강제로 위쪽 여백 추가
+
+            // 각 후기를 카드로 변환
+            const cardsHTML = reviews.map((review, index) => {
+                console.log(`후기 ${index + 1} 처리:`, review);
+                
+                return `
+                    <div class="review-card" onclick="openTherapistDetailFromReview('${review.therapistId || 'sample-' + (index + 1)}')" 
+                         style="background: #f8f9fa; padding: 2rem; border-radius: 15px; border-left: 4px solid #05796B; 
+                                position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; 
+                                transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                        
+                        <div style="position: absolute; top: 0.5rem; left: 1rem; font-size: 2.5rem; color: #05796B; 
+                                    font-family: serif; opacity: 0.3;">"</div>
+                        
+                        <div class="review-content" style="font-size: 1rem; line-height: 1.6; color: #555; 
+                                                          margin-bottom: 1.5rem; font-style: italic;">
+                            ${truncateText(review.content || '좋은 치료를 받았습니다.')}
+                            <div style="margin-top: 0.8rem; font-size: 0.85rem; color: #05796B; font-weight: 500; 
+                                       font-style: normal;">
+                                💡 치료사 상세정보 보러가기
+                            </div>
+                        </div>
+                        
+                        <div class="review-therapist" style="display: flex; align-items: center; gap: 1rem; 
+                                                            margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                            <div class="review-therapist-avatar" style="width: 40px; height: 40px; 
+                                                                        background: linear-gradient(135deg, #05796B, #077A66); 
+                                                                        border-radius: 50%; display: flex; align-items: center; 
+                                                                        justify-content: center; color: white; font-size: 1.2rem;">
+                                ${review.therapistImage || '👨‍⚕️'}
+                            </div>
+                            <div class="review-therapist-info" style="flex: 1;">
+                                <div class="review-therapist-name" style="font-weight: 600; color: #05796B; font-size: 0.9rem;">
+                                    ${review.therapistName || '전문치료사'} 치료사
+                                </div>
+                                <div class="review-therapist-specialty" style="font-size: 0.8rem; color: #666;">
+                                    ${review.therapistSpecialty || '전문치료'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            console.log('생성된 HTML:', cardsHTML);
+            container.innerHTML = cardsHTML;
+            
+            // 호버 효과 추가
+            setTimeout(() => {
+                const cards = container.querySelectorAll('.review-card');
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                        this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.12)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.08)';
+                    });
+                });
+            }, 100);
+            
+            console.log('후기 카드 생성 완료, 카드 수:', reviews.length);
+        }
+
+        // 후기 클릭 시 치료사 상세페이지로 이동
+        function openTherapistDetailFromReview(therapistId) {
+            window.location.href = `therapist-detail.html?id=${therapistId}`;
+        }
+
+        // 치료사 ID 생성 (이름 기반)
+        function generateTherapistId(name) {
+            return name.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-가-힣]/g, '');
+        }
+
+        // 치료사 카드 HTML 생성 (가로형)
+        function createTherapistCard(therapist) {
+            const centerDisplay = therapist.centerInfo && therapist.centerInfo.isPublic 
+                ? `<div class="center-name">${therapist.centerInfo.name}</div>
+                   <div class="center-support">${therapist.voucherSupport || ''}</div>`
+                : `<div class="center-name">🔒 비공개</div>
+                   <div class="center-support">상담 신청 시 안내</div>`;
+
+            const badges = therapist.subSpecialties && therapist.subSpecialties.length > 0
+                ? therapist.subSpecialties.slice(0, 3).map(specialty => 
+                    `<span class="badge">${specialty}</span>`
+                  ).join('')
+                : `<span class="badge">${therapist.mainSpecialty || '전문치료'}</span>`;
+
+            return `
+                <div class="therapist-card" onclick="openTherapistDetail('${therapist.id}')">
+                    <div class="card-header">
+                        <span class="card-emoji">${therapist.image || '👨‍⚕️'}</span>
+                        <div class="card-name">${therapist.name}</div>
+                        <div class="card-specialty">${therapist.specialty || '전문 치료사'}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-content">
+                            <div class="card-intro">${therapist.intro || '전문적인 치료 서비스를 제공합니다.'}</div>
+                            
+                            <div class="card-badges">
+                                ${badges}
+                            </div>
+                            
+                            <div class="card-center">
+                                ${centerDisplay}
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); requestConsultation()">
+                                상담 신청
+                            </button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); openTherapistDetail('${therapist.id}')">
+                                자세히 보기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 홈페이지용 설정
+        const homePageLimit = 3; // 홈페이지에는 3개만 표시
+
+        // 치료사 목록 표시 (홈페이지용 - 3개만, 랜덤으로 선택)
+        function displayTherapists(therapists) {
+            const container = document.getElementById('therapistsContainer');
+            
+            if (therapists.length === 0) {
+                container.innerHTML = `
+                    <div class="loading">
+                        <p>등록된 치료사가 없습니다.</p>
+                        <p>관리자 페이지에서 치료사를 추가해주세요.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 기존 버튼 제거
+            const existingButton = document.getElementById('therapistButton');
+            if (existingButton) {
+                existingButton.remove();
+            }
+
+            // 치료사 목록을 랜덤으로 섞은 후 상위 3명 선택
+            const shuffledTherapists = shuffleArray(therapists);
+            const featuredTherapists = shuffledTherapists.slice(0, homePageLimit);
+
+            // 치료사 카드들만 표시
+            container.innerHTML = featuredTherapists.map(therapist => createTherapistCard(therapist)).join('');
+            
+            // 버튼은 별도로 추가 (인원 수 제거)
+            if (therapists.length > homePageLimit) {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.id = 'therapistButton';
+                buttonContainer.style.cssText = `
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 3rem;
+                    margin-bottom: 3rem;
+                `;
+                
+                buttonContainer.innerHTML = `
+                    <button class="btn btn-primary" onclick="goToTherapistList()" 
+                            style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 50px;">
+                        🔍 모든 치료사 보기
+                    </button>
+                `;
+                
+                // 버튼을 therapists-grid 다음에 추가
+                container.parentNode.insertBefore(buttonContainer, container.nextSibling);
+            }
+        }
+
+        // 치료사 목록 페이지로 이동
+        function goToTherapistList() {
+            // 치료사 목록 페이지로 이동
+            window.location.href = 'therapist-list.html';
+        }
+
+        // 치료사 상세 페이지로 이동
+        function openTherapistDetail(therapistId) {
+            window.location.href = `therapist-detail.html?id=${therapistId}`;
+        }
+
+        // 상담 신청
+        function requestConsultation() {
+            window.open('https://itium0830.github.io/my-itium-site/survey', '_blank');
+        }
+
+        // 치료사 섹션으로 스크롤
+        function scrollToTherapists() {
+            document.querySelector('.main-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 히어로 애니메이션 클래스
+        class TherapyAnimation {
+            constructor() {
+                this.words = ['언어치료사', '작업치료사', '감각통합치료사', '행동치료사', '놀이치료사', '미술치료사', '음악치료사', '심리상담사'];
+                this.currentIndex = 0;
+                this.wordElements = document.querySelectorAll('.therapy-word');
+                this.startAnimation();
+            }
+
+            startAnimation() {
+                // 첫 번째 단어는 2초 후에 바뀌기 시작
+                setTimeout(() => {
+                    this.animateWords();
+                }, 2000);
+            }
+
+            animateWords() {
+                setInterval(() => {
+                    // 현재 활성화된 단어를 이전 상태로 변경
+                    this.wordElements[this.currentIndex].classList.remove('active');
+                    this.wordElements[this.currentIndex].classList.add('prev');
+                    
+                    // 다음 인덱스로 이동
+                    this.currentIndex = (this.currentIndex + 1) % this.words.length;
+                    
+                    // 다음 단어를 활성화
+                    setTimeout(() => {
+                        // 모든 단어의 클래스 초기화
+                        this.wordElements.forEach(word => {
+                            word.classList.remove('active', 'prev');
+                        });
+                        
+                        // 현재 단어만 활성화
+                        this.wordElements[this.currentIndex].classList.add('active');
+                    }, 100);
+                    
+                }, 2000); // 2초마다 변경
+            }
+        }
+
+        // 페이지 로드 시 치료사 목록과 후기 로드
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('페이지 로드 완료, 치료사 목록과 후기 로드 시작');
+            
+            // 히어로 애니메이션 시작
+            new TherapyAnimation();
+            
+            // 치료사 목록과 후기를 병렬로 로드
+            try {
+                const therapists = await loadAllTherapists();
+                displayTherapists(therapists);
+                
+                console.log('후기 로드 시작');
+                // 후기 로드
+                const reviews = await loadRandomReviews();
+                console.log('로드된 후기:', reviews);
+                displayReviews(reviews);
+                console.log('후기 표시 완료');
+            } catch (error) {
+                console.error('페이지 로드 중 오류 발생:', error);
+                
+                // 오류 발생 시 기본 후기 표시
+                const fallbackReviews = [
+                    {
+                        content: "정말 좋은 치료를 받았습니다. 아이가 많이 개선되었어요!",
+                        therapistId: "sample-1",
+                        therapistName: "김선생",
+                        therapistSpecialty: "언어치료 전문",
+                        therapistImage: "👩‍⚕️"
+                    },
+                    {
+                        content: "전문적이고 친절하게 상담해주셔서 감사합니다.",
+                        therapistId: "sample-2",
+                        therapistName: "이선생",
+                        therapistSpecialty: "작업치료 전문", 
+                        therapistImage: "👨‍⚕️"
+                    },
+                    {
+                        content: "체계적인 프로그램으로 아이의 발달에 큰 도움이 되었습니다.",
+                        therapistId: "sample-3",
+                        therapistName: "박선생",
+                        therapistSpecialty: "놀이치료 전문",
+                        therapistImage: "👩‍⚕️"
+                    }
+                ];
+                displayReviews(fallbackReviews);
+            }
+        });
+    </script>
 </body>
 </html>
