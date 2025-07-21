@@ -680,6 +680,18 @@
             .header h1 {
                 font-size: 2rem;
             }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section-subtitle {
+                font-size: 1rem;
+            }
             
             .therapists-grid {
                 grid-template-columns: 1fr;
@@ -1420,12 +1432,60 @@
             }
         }
 
+        // 모바일 텍스트 최적화 함수
+        function optimizeTextForMobile() {
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // 히어로 섹션 부제목 최적화
+                const heroSubtitle = document.querySelector('.hero-subtitle');
+                if (heroSubtitle) {
+                    heroSubtitle.innerHTML = `
+                        <b>발달이 느린 아이들</b>의<br>
+                        건강한 성장을 위한<br>
+                        전문 치료 서비스
+                    `;
+                }
+                
+                // 치료사 정보 설명 최적화
+                const sectionSubtitle = document.querySelector('.section-subtitle');
+                if (sectionSubtitle) {
+                    sectionSubtitle.innerHTML = `
+                        검증된 전문 치료사들이<br>
+                        우리 아이들의 건강한 성장을 위해<br>
+                        최선을 다하고 있습니다
+                    `;
+                }
+            } else {
+                // PC에서는 원래 텍스트 유지
+                const heroSubtitle = document.querySelector('.hero-subtitle');
+                if (heroSubtitle) {
+                    heroSubtitle.innerHTML = `
+                        <b>발달이 느린 아이들</b>의
+                        <br>건강한 성장을 위한 전문 치료 서비스
+                    `;
+                }
+                
+                const sectionSubtitle = document.querySelector('.section-subtitle');
+                if (sectionSubtitle) {
+                    sectionSubtitle.innerHTML = `
+                        검증된 전문 치료사들이 우리 아이들의<br>
+                        건강한 성장을 위해 최선을 다하고 있습니다
+                    `;
+                }
+            }
+        }
+
+        // 페이지 로드 시 치료사 목록과 후기 로드
         // 페이지 로드 시 치료사 목록과 후기 로드
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('페이지 로드 완료, 치료사 목록과 후기 로드 시작');
             
             // 히어로 애니메이션 시작
             new TherapyAnimation();
+            
+            // 모바일 텍스트 최적화
+            optimizeTextForMobile();
             
             // 치료사 목록과 후기를 병렬로 로드
             try {
@@ -1467,6 +1527,11 @@
                 ];
                 displayReviews(fallbackReviews);
             }
+        });
+
+        // 윈도우 크기 변경 시 텍스트 최적화 재적용
+        window.addEventListener('resize', function() {
+            optimizeTextForMobile();
         });
     </script>
 </body>
