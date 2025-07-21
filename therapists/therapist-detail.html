@@ -445,46 +445,53 @@
       font-size: 1.2rem;
     }
 
-    /* 후기 섹션 */
+    /* 후기 섹션 (수정됨 - 새로운 구조) */
     .reviews-container {
       display: grid;
-      gap: 1.5rem;
+      gap: 1rem;
     }
 
     .review-item {
       background: #f8f9fa;
       padding: 1.5rem;
-      border-radius: 10px;
+      border-radius: 12px;
       border-left: 4px solid #05796B;
-    }
-
-    .review-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .review-author {
-      font-weight: 600;
-      color: #05796B;
-    }
-
-    .review-rating {
-      color: #FFD700;
-      font-size: 1.1rem;
-    }
-
-    .review-content {
       line-height: 1.6;
       color: #555;
+      position: relative;
     }
 
-    .review-date {
-      text-align: right;
-      color: #999;
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
+    .review-item::before {
+      content: '"';
+      position: absolute;
+      top: 0.5rem;
+      left: 1rem;
+      font-size: 2rem;
+      color: #05796B;
+      font-family: serif;
+      opacity: 0.3;
+    }
+
+    .review-item::after {
+      content: '"';
+      position: absolute;
+      bottom: 0.5rem;
+      right: 1rem;
+      font-size: 2rem;
+      color: #05796B;
+      font-family: serif;
+      opacity: 0.3;
+    }
+
+    /* 후기 구분선 스타일 */
+    .review-item:nth-child(odd) {
+      background: #f0f8ff;
+      border-left-color: #05796B;
+    }
+
+    .review-item:nth-child(even) {
+      background: #f8fff8;
+      border-left-color: #077A66;
     }
 
     /* 더 많은 치료사 섹션 */
@@ -859,40 +866,19 @@
           </h3>
           <div class="reviews-container" id="reviews">
             <div class="review-item">
-              <div class="review-header">
-                <div class="review-author">박**님</div>
-                <div class="review-rating">★★★★★</div>
-              </div>
-              <div class="review-content">
-                6세 아들이 발음이 부정확해서 걱정이 많았는데, 김미영 선생님 덕분에 많이 좋아졌어요. 
-                아이가 재미있어하는 놀이로 치료해주셔서 매번 치료실 가는 걸 기대하고 있어요. 
-                부모에게도 집에서 할 수 있는 방법들을 자세히 알려주셔서 정말 감사합니다.
-              </div>
-              <div class="review-date">2024.12.15</div>
+              6세 아들이 발음이 부정확해서 걱정이 많았는데, 김미영 선생님 덕분에 많이 좋아졌어요. 
+              아이가 재미있어하는 놀이로 치료해주셔서 매번 치료실 가는 걸 기대하고 있어요. 
+              부모에게도 집에서 할 수 있는 방법들을 자세히 알려주셔서 정말 감사합니다.
             </div>
             <div class="review-item">
-              <div class="review-header">
-                <div class="review-author">이**님</div>
-                <div class="review-rating">★★★★★</div>
-              </div>
-              <div class="review-content">
-                말이 늦은 5세 딸을 데리고 갔는데, 정말 체계적으로 평가해주시고 아이 수준에 맞는 
-                프로그램을 짜주셨어요. 3개월 만에 어휘력이 눈에 띄게 늘었고, 문장도 길어졌어요. 
-                선생님의 따뜻한 마음이 느껴져서 더욱 신뢰가 갔습니다.
-              </div>
-              <div class="review-date">2024.11.28</div>
+              말이 늦은 5세 딸을 데리고 갔는데, 정말 체계적으로 평가해주시고 아이 수준에 맞는 
+              프로그램을 짜주셨어요. 3개월 만에 어휘력이 눈에 띄게 늘었고, 문장도 길어졌어요. 
+              선생님의 따뜻한 마음이 느껴져서 더욱 신뢰가 갔습니다.
             </div>
             <div class="review-item">
-              <div class="review-header">
-                <div class="review-author">최**님</div>
-                <div class="review-rating">★★★★★</div>
-              </div>
-              <div class="review-content">
-                말더듬이 있는 7세 아들을 치료받았는데, 선생님이 정말 전문적이시고 아이를 잘 
-                이해해주세요. 아이의 자신감도 많이 회복되었고, 또래 친구들과의 소통도 자연스러워졌어요. 
-                온라인 상담도 대면 못지않게 효과적이었습니다.
-              </div>
-              <div class="review-date">2024.11.10</div>
+              말더듬이 있는 7세 아들을 치료받았는데, 선생님이 정말 전문적이시고 아이를 잘 
+              이해해주세요. 아이의 자신감도 많이 회복되었고, 또래 친구들과의 소통도 자연스러워졌어요. 
+              온라인 상담도 대면 못지않게 효과적이었습니다.
             </div>
           </div>
         </div>
@@ -1022,34 +1008,12 @@
         },
         training: [],
         reviews: [
-          {
-            author: '김**님',
-            rating: 5,
-            content: '정말 만족스러운 치료를 받았습니다. 전문적이고 친절하세요.',
-            date: '2024.12.01'
-          }
+          '정말 만족스러운 치료를 받았습니다. 전문적이고 친절하세요.',
+          '아이가 많이 좋아졌어요. 감사합니다.',
+          '체계적인 치료 프로그램이 인상적이었습니다.'
         ]
       }
     };
-
-    // 평점 계산 및 표시
-    function calculateAndDisplayRating(reviews) {
-      if (!reviews || reviews.length === 0) {
-        return;
-      }
-
-      const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 5), 0);
-      const averageRating = totalRating / reviews.length;
-      
-      const allH3 = Array.from(document.querySelectorAll('h3'));
-      const reviewSection = allH3.find(h => h.textContent.includes('후기'));
-      if (reviewSection) {
-        reviewSection.innerHTML = `
-          <span class="section-icon">💬</span>
-          후기 (${reviews.length}개)
-        `;
-      }
-    }
 
     function getTherapistIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -1081,7 +1045,33 @@
       displayTherapistInfo(therapist);
     }
 
-    // 치료사 정보 화면에 표시 (빈 데이터 처리 개선)
+    // 후기 데이터 구조 확인 및 처리 (기존/새로운 구조 모두 호환)
+    function processReviews(reviews) {
+      if (!reviews || reviews.length === 0) {
+        return [];
+      }
+
+      // 첫 번째 요소로 데이터 구조 판단
+      const firstReview = reviews[0];
+      
+      // 기존 구조 (객체 배열)인지 확인
+      if (typeof firstReview === 'object' && firstReview.content) {
+        console.log('기존 후기 구조 감지');
+        return reviews.map(r => r.content || '후기 내용 없음');
+      } 
+      // 새로운 구조 (문자열 배열)
+      else if (typeof firstReview === 'string') {
+        console.log('새로운 후기 구조 감지');
+        return reviews;
+      }
+      // 예상치 못한 구조
+      else {
+        console.log('알 수 없는 후기 구조');
+        return reviews.map(r => String(r));
+      }
+    }
+
+    // 치료사 정보 화면에 표시 (새로운 후기 구조 적용)
     function displayTherapistInfo(therapist) {
       console.log('치료사 정보 표시 시작:', therapist);
       
@@ -1123,32 +1113,26 @@
       // 전체 조합
       document.getElementById('centerInfo').innerHTML = centerInfoHtml + activityAreaHtml + voucherHtml;
 
-      // 후기 처리
-      if (therapist.reviews && therapist.reviews.length > 0) {
-        calculateAndDisplayRating(therapist.reviews);
-        
+      // 후기 처리 (새로운 구조)
+      const processedReviews = processReviews(therapist.reviews);
+      
+      if (processedReviews.length > 0) {
+        // 후기 섹션 제목 업데이트 (평점 제거)
         const allH3 = Array.from(document.querySelectorAll('h3'));
         const reviewSection = allH3.find(h => h.textContent.includes('후기'));
         if (reviewSection) {
           reviewSection.innerHTML = `
             <span class="section-icon">💬</span>
-            후기 (${therapist.reviews.length}개)
+            후기 (${processedReviews.length}개)
           `;
         }
         
+        // 후기 내용 표시 (새로운 구조)
         const reviewsContainer = document.getElementById('reviews');
         if (reviewsContainer) {
-          reviewsContainer.innerHTML = 
-            therapist.reviews.map(r => `
-              <div class="review-item">
-                <div class="review-header">
-                  <div class="review-author">${r.author || '익명'}</div>
-                  <div class="review-rating">${'★'.repeat(r.rating || 5)}</div>
-                </div>
-                <div class="review-content">${r.content || '후기 내용 없음'}</div>
-                <div class="review-date">${r.date || '날짜 없음'}</div>
-              </div>
-            `).join('');
+          reviewsContainer.innerHTML = processedReviews.map(review => 
+            `<div class="review-item">${review}</div>`
+          ).join('');
         }
       } else {
         const allH3 = Array.from(document.querySelectorAll('h3'));
@@ -1164,8 +1148,6 @@
         if (reviewsContainer) {
           reviewsContainer.innerHTML = '<p class="empty-message">아직 등록된 후기가 없습니다.</p>';
         }
-        
-        calculateAndDisplayRating([]);
       }
 
       // 전문분야 표시
@@ -1225,7 +1207,7 @@
           '<p class="empty-message">등록된 자격증 정보가 없습니다.</p>';
       }
 
-      // 경력 (수정됨 - 빈 데이터 처리)
+      // 경력 (빈 데이터 처리)
       if (therapist.experience && therapist.experience.length > 0) {
         document.getElementById('experience').innerHTML = 
           therapist.experience.map(e => `
@@ -1271,7 +1253,7 @@
         document.getElementById('education').innerHTML = '<p class="empty-message">등록된 학력 정보가 없습니다.</p>';
       }
 
-      // 교육 이수 (수정됨 - 빈 데이터 처리)
+      // 교육 이수 (빈 데이터 처리)
       if (therapist.training && therapist.training.length > 0) {
         document.getElementById('training').innerHTML = 
           therapist.training.map(t => `<div class="training-item">${t}</div>`).join('');

@@ -536,8 +536,9 @@
                     </div>
 
                     <div class="form-group full-width">
-                        <label for="reviews">후기 (줄바꿈으로 구분)</label>
-                        <textarea id="reviews" name="reviews" placeholder="박**님|5|6세 아들이 발음이 부정확해서 걱정이 많았는데...&#10;이**님|5|말이 늦은 5세 딸을 데리고 갔는데..."></textarea>
+                        <label for="reviews">후기 (한 줄씩 입력)</label>
+                        <textarea id="reviews" name="reviews" placeholder="6세 아들이 발음이 부정확해서 걱정이 많았는데, 김미영 선생님 덕분에 많이 좋아졌어요. 아이가 재미있어하는 놀이로 치료해주셔서 매번 치료실 가는 걸 기대하고 있어요.&#10;말이 늦은 5세 딸을 데리고 갔는데, 정말 체계적으로 평가해주시고 아이 수준에 맞는 프로그램을 짜주셨어요. 3개월 만에 어휘력이 눈에 띄게 늘었습니다.&#10;말더듬이 있는 7세 아들을 치료받았는데, 선생님이 정말 전문적이시고 아이를 잘 이해해주세요. 아이의 자신감도 많이 회복되었습니다."></textarea>
+                        <small>💡 팁: 각 후기를 줄바꿈으로 구분하여 입력하세요. 작성자명이나 평점은 입력하지 않습니다.</small>
                     </div>
                 </div>
 
@@ -667,7 +668,7 @@
                 mainSpecialty: formData.get('mainSpecialty'),
                 subSpecialties: formData.get('subSpecialties') ? 
                     formData.get('subSpecialties').split(',').map(s => s.trim()).filter(s => s) : [],
-                activityArea: formData.get('activityArea'), // 활동지역 추가
+                activityArea: formData.get('activityArea'),
                 centerInfo: {
                     isPublic: formData.get('centerPublic') === 'on',
                     name: formData.get('centerName') || '',
@@ -680,9 +681,9 @@
                 treatmentMethods: parseTreatmentMethodsFromCheckbox(selectedMethods),
                 certifications: parseCertifications(formData.get('certifications')),
                 experience: parseExperience(formData.get('experience')),
-                education: parseEducation(formData.get('education')), // 수정된 학력 파싱
+                education: parseEducation(formData.get('education')),
                 training: parseTraining(formData.get('training')),
-                reviews: parseReviews(formData.get('reviews'))
+                reviews: parseReviews(formData.get('reviews')) // 새로운 후기 파싱
             };
             
             return data;
@@ -761,7 +762,7 @@
                 });
         }
 
-        // 학력 파싱 (수정됨 - 대학명 제외)
+        // 학력 파싱 (대학명 제외)
         function parseEducation(eduText) {
             if (!eduText) return { master: null, bachelor: null };
             
@@ -775,7 +776,7 @@
                     const major = parts[1].trim();
                     const data = {
                         degree: `${level} (${major} 전공)`,
-                        school: '', // 대학명 제거
+                        school: '',
                         major: major
                     };
                     
@@ -799,21 +800,13 @@
                 .map(line => line.trim());
         }
 
-        // 후기 파싱
+        // 후기 파싱 (새로운 방식 - 텍스트만)
         function parseReviews(reviewsText) {
             if (!reviewsText) return [];
             
             return reviewsText.split('\n')
                 .filter(line => line.trim())
-                .map(line => {
-                    const parts = line.split('|');
-                    return {
-                        author: parts[0] ? parts[0].trim() : '보호자',
-                        rating: parts[1] ? parseInt(parts[1]) : 5,
-                        content: parts[2] ? parts[2].trim() : line.trim(),
-                        date: '2024.12.01'
-                    };
-                });
+                .map(line => line.trim());
         }
 
         // 치료사 저장
@@ -864,6 +857,8 @@
                 
                 snapshot.forEach(doc => {
                     const data = doc.data();
+                    const reviewCount = data.reviews ? (Array.isArray(data.reviews) ? data.reviews.length : 0) : 0;
+                    
                     html += `
                         <div class="therapist-item">
                             <div class="therapist-info">
@@ -872,6 +867,7 @@
                                 <p><strong>활동지역:</strong> ${data.activityArea || '미설정'}</p>
                                 <p><strong>소개:</strong> ${data.intro}</p>
                                 <p><strong>센터:</strong> ${data.centerInfo?.isPublic ? data.centerInfo.name : '비공개'}</p>
+                                <p><strong>후기:</strong> ${reviewCount}개</p>
                             </div>
                             <div class="therapist-actions">
                                 <button class="btn btn-small" onclick="editTherapist('${doc.id}')">✏️ 수정</button>
@@ -910,7 +906,7 @@
                 document.getElementById('image').value = data.image || '👩‍⚕️';
                 document.getElementById('mainSpecialty').value = data.mainSpecialty || '';
                 document.getElementById('subSpecialties').value = (data.subSpecialties || []).join(', ');
-                document.getElementById('activityArea').value = data.activityArea || ''; // 활동지역 추가
+                document.getElementById('activityArea').value = data.activityArea || '';
                 document.getElementById('centerName').value = data.centerInfo?.name || '';
                 document.getElementById('centerAddress').value = data.centerInfo?.address || '';
                 document.getElementById('centerPublic').checked = data.centerInfo?.isPublic || false;
@@ -921,9 +917,9 @@
                 setTreatmentMethodsCheckboxes(data.treatmentMethods);
                 document.getElementById('certifications').value = formatCertifications(data.certifications);
                 document.getElementById('experience').value = formatExperience(data.experience);
-                document.getElementById('education').value = formatEducation(data.education); // 수정된 학력 포맷
+                document.getElementById('education').value = formatEducation(data.education);
                 document.getElementById('training').value = (data.training || []).join('\n');
-                document.getElementById('reviews').value = formatReviews(data.reviews);
+                document.getElementById('reviews').value = formatReviews(data.reviews); // 새로운 후기 포맷
                 
                 // 추가 탭으로 이동
                 showTab('add-therapist');
@@ -968,7 +964,6 @@
             return exp.map(e => `${e.period}|${e.role}|${e.description}`).join('\n');
         }
 
-        // 학력 포맷 (수정됨 - 대학명 제외)
         function formatEducation(edu) {
             if (!edu) return '';
             let result = [];
@@ -981,9 +976,22 @@
             return result.join('\n');
         }
 
+        // 후기 포맷 (새로운 방식 - 텍스트만)
         function formatReviews(reviews) {
-            if (!reviews || !Array.isArray(reviews)) return '';
-            return reviews.map(r => `${r.author}|${r.rating}|${r.content}`).join('\n');
+            if (!reviews) return '';
+            
+            // 기존 객체 형태와 새로운 문자열 배열 형태 모두 지원 (호환성)
+            if (Array.isArray(reviews)) {
+                if (reviews.length > 0 && typeof reviews[0] === 'string') {
+                    // 새로운 형태: 문자열 배열
+                    return reviews.join('\n');
+                } else {
+                    // 기존 형태: 객체 배열 -> 내용만 추출
+                    return reviews.map(r => r.content || '').filter(content => content).join('\n');
+                }
+            }
+            
+            return '';
         }
 
         // 치료사 삭제
