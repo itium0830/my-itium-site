@@ -1247,7 +1247,7 @@
 
         // 후기 클릭 시 치료사 상세페이지로 이동
         function openTherapistDetailFromReview(therapistId) {
-            window.location.href = `therapist-detail.html?id=${therapistId}`;
+            window.location.href = `therapists/therapist-detail.html?id=${therapistId}`;
         }
 
         // 치료사 ID 생성 (이름 기반)
@@ -1361,13 +1361,13 @@
 
         // 치료사 목록 페이지로 이동
         function goToTherapistList() {
-            // 치료사 목록 페이지로 이동
-            window.location.href = 'therapist-list.html';
+            // 치료사 목록 페이지로 이동 (하위 폴더)
+            window.location.href = 'therapists/therapist-list.html';
         }
 
         // 치료사 상세 페이지로 이동
         function openTherapistDetail(therapistId) {
-            window.location.href = `therapist-detail.html?id=${therapistId}`;
+            window.location.href = `therapists/therapist-detail.html?id=${therapistId}`;
         }
 
         // 상담 신청
