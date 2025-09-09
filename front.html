@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이티움 - 역할 선택</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            background: linear-gradient(135deg, #05796B 0%, #04635A 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .role-selection {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 280px;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #05796B;
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .role-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #05796B;
+        }
+
+        .role-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .role-description {
+            color: #666;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .role-button {
+            background: #05796B;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+
+        .role-button:hover {
+            background: #04635A;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .help-text {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .role-selection {
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+            }
+            
+            .role-card {
+                width: 280px;
+                height: 350px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <div class="logo">아이티움</div>
+        <div class="subtitle">
+            아이의 발달을 위한<br>
+            전문가 매칭 서비스에 오신 것을 환영합니다
+        </div>
+        
+        <div class="role-selection">
+            <div class="role-card" onclick="goToParentPage()">
+                <div class="card-content">
+                    <div class="role-icon">👨‍👩‍👧‍👦</div>
+                    <div class="role-title">보호자</div>
+                    <div class="role-description">
+                        아이의 발달을 위해<br>
+                        전문가를 찾고 계신 부모님 또는 보호자
+                    </div>
+                </div>
+                <button class="role-button">보호자로 시작하기</button>
+            </div>
+            
+            <div class="role-card" onclick="goToTherapistPage()">
+                <div class="card-content">
+                    <div class="role-icon">👩‍⚕️</div>
+                    <div class="role-title">치료사</div>
+                    <div class="role-description">
+                        아동 발달 치료 및 교육을<br>
+                        제공하는 전문가
+                    </div>
+                </div>
+                <button class="role-button">치료사로 시작하기</button>
+            </div>
+        </div>
+        
+        <div class="help-text">
+            어떤 역할로 이용하실지 선택해 주세요
+        </div>
+    </div>
+
+    <script>
+        function goToParentPage() {
+            window.location.href = 'https://itium0830.github.io/my-itium-site/';
+        }
+        
+        function goToTherapistPage() {
+            window.location.href = 'https://i-tium.com/therapist';
+        }
+
+        // 카드 클릭 애니메이션
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
